@@ -1,0 +1,1992 @@
+/*
+ * Copyright 2016-present, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
+/* jshint node: true, devel: true */
+'use strict';
+
+var SERVER_URL = 'https://7ccf727d.ngrok.io/';
+
+var bodyParser = require('body-parser'),
+  express = require('express'),
+  https = require('https'),
+  request = require('request'),
+  fs = require('fs'),
+  nodemailer = require("nodemailer"),
+  mysql      = require('mysql'),
+  busboy = require('connect-busboy'),
+  fs = require('fs'),
+  multer  = require('multer'),
+  cors = require('cors'),
+  srs = require('secure-random-string'),
+  helmet = require('helmet'),
+  morgan = require('morgan'),
+  crypto = require('crypto');
+  const { base64encode, base64decode } = require('nodejs-base64');
+
+
+  //npm install --save express  
+  var app = express();
+  app.use(bodyParser.json());
+  app.use(cors());
+  app.use(busboy());
+  app.use(helmet());
+  app.use(morgan('combined'));
+  app.use(helmet.xssFilter({ setOnOldIE: true }));
+  app.use(helmet.frameguard('deny')); 
+  app.use(helmet.hsts({maxAge: 7776000000, includeSubDomains: true})); 
+  app.use(helmet.hidePoweredBy()); 
+  app.use(helmet.ieNoOpen()); 
+  app.use(helmet.noSniff()); 
+  app.use(helmet.noCache());
+
+ // const nodemailer = require("nodemailer");
+
+  // Database initialization
+  var connection = mysql.createConnection({
+	  host     : 'localhost',
+	  user     : 'root',
+	  password : '',
+	  database : 'sphchatdb'
+	});
+
+/*
+ *  Create ad category list add future ad addion into thus section.
+ *
+ */
+
+var adCatagoryList = [
+  "Vehicle",
+  "Properties"/*,
+  "Jobs",
+  "Travel",
+  "Personal",
+  "Business",
+  "Education" */
+];
+
+/*
+* Create ad publication category list add future ad addion into thus section.
+*
+*/
+
+var adPublicationCategoryList = [
+  "The Straits Times",
+  "Lianhe ZaoBao" 
+];
+
+/*
+* Create ad Type category list add future ad addion into thus section.
+*
+*/
+
+// constants
+
+var GST_RATE = 7;
+var VEHICLE = "Vehicle";
+var SALE = "Sale";
+var RENT = "Rent"
+var PROPERTY = "Property";
+var SERVICES = "Services";
+var UNIT_PRICE_TST = 28;
+var UNIT_PRICE_ZB = 23;
+var OTHERS = "Others";
+var session_ttl_minutes = 10;
+
+
+app.listen(3000, () => {
+ console.log("Server running on port 3000");
+});
+
+//Get request
+app.get("/", cors(), (req, res, next) => {
+ res.json(["Hello","How","Can","I","Help"]);
+});
+
+
+//Get request
+app.get("/favicon.ico", cors(), (req, res, next) => {
+ res.json(["Bad","request","/favicon.ico","received"]);
+});
+
+//Get request
+app.get("/welcome", cors(), (req, res, next) => {
+ res.json(["Hi","Hello","You","We","All"]);
+});
+
+
+
+
+//upload destination needs to change it with s3 later.
+var upload = multer({ dest: '/Users/sssingh/upload/' })
+
+app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
+   
+   // req.file is the name of your file in the form above, here 'uploaded_file'
+   // req.body will hold the text fields, if there were any 
+   //var data = req.body;
+   
+   var temp = JSON.parse(JSON.stringify(req.body, null, 2));
+   var values_json = JSON.parse(temp.data);
+
+   console.log("file", req.file['filename']);
+
+   var id = values_json.id;
+   console.log("contact number as id :" , id);
+
+   var message = values_json.textMessage;
+   console.log("message received:" , message);
+
+   var nextTemplate = values_json.nextTemplate;
+   console.log("nextTemplate received:" , nextTemplate);
+
+   var fileName = req.file['filename'];
+   
+   var messageData; 
+
+   var hash_token = req.headers['chat-cookie'];
+    console.log(req.headers);
+
+   console.log("hash_token received:" , hash_token);
+
+   if(hash_token){
+		res.header("chat-cookie",hash_token);
+	}
+  
+	  if(!id || !hash_token){
+		 var token = getToken();
+		 messageData = sendForm(); 
+	   	 console.log("sending message :" , messageData);
+	   	 res.header("chat-cookie",token);
+	  }
+   
+	   // image storage is local for now need to move files to s3 storage implementation required
+	   
+	   try{
+	   		if(nextTemplate == "has-upload-service-image"){
+
+	   		if(fileName){
+
+	   			var query = "update sphchatdb.sph_chatbot set ad_service_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now() and is_active = false order by create_timestamp  DESC LIMIT 1";
+			    console.log("query: ", query);
+			    indsertUpdateData(query);
+	   		}
+	   		
+		    messageData = sendHasQrCode(id, "qr-code-services" , "nature-services", "<strong>Great <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/qr-code-icon.png' width='15%' height='15%'>. Service picture received </strong>🖇 <br/>Do you also have the QR Code ?");
+
+	   }
+	   if(nextTemplate == "qr-code-services-upload-mlutipart"){
+
+	   		if(fileName){
+
+	   			var query = "update sphchatdb.sph_chatbot set ad_service_qr_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+			    console.log("query: ", query);
+			    indsertUpdateData(query);
+	   		}
+	   		
+			 messageData = sendNoQrCode(id, "no-qr-code-services" , "qr-code-services", "<strong>Well done. QR code received <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/qr-code-icon.png' width='15%' height='15%'> </strong><br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable.");
+
+	   }
+	   if(nextTemplate == "has-qr-code-vehicle"){
+
+	   		if(fileName){
+
+	   			var query = "update sphchatdb.sph_chatbot set ad_vehicle_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+			    console.log("query: ", query);
+			    indsertUpdateData(query);
+	   		}
+	   		
+		    messageData = sendHasQrCode(id, "qr-code-vehicle" , "upload-vehicle-image", "<strong>Great <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/image-icon.png' width='15%' height='15%'>. Vehicle picture received </strong>🖇 <br/>Do you also have the QR Code ?");
+
+	   }  if(nextTemplate == "has-qr-code-services"){
+
+	   		if(fileName){
+
+	   			var query = "update sphchatdb.sph_chatbot set ad_service_image_name = '"+fileName+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+			    console.log("query: ", query);
+			    indsertUpdateData(query);
+	   		}
+	   		
+		    messageData = sendHasQrCode(id, "qr-code-services" , "has-upload-service-image", "<strong>Great <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/image-icon.png' width='15%' height='15%'>. Service picture received </strong>🖇 <br/>Do you also have the QR Code ?");
+
+	   }else if(nextTemplate == "has-qr-code-property"){
+
+	   		
+	   		if(fileName){
+
+	   			var query = "update sphchatdb.sph_chatbot set ad_property_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+			    console.log("query: ", query);
+			    indsertUpdateData(query);
+	   		}
+
+		    messageData = sendHasQrCode(id, "qr-code-property" , "upload-property-image", "<strong>Great <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/image-icon.png' width='15%' height='15%'>. Property picture received </strong>🖇 <br/>Do you also have the QR Code ?");
+
+	   }else if(nextTemplate == "qr-code-vehicle-upload-mlutipart"){
+
+	   		if(fileName){
+	   			
+	   			var query = "update sphchatdb.sph_chatbot set ad_vehicle_qr_code_name = '"+fileName+"' , has_vehicle_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+			    console.log("query: ", query);
+			    indsertUpdateData(query);
+	   		}else{
+
+	   			var query = "update sphchatdb.sph_chatbot set ad_vehicle_qr_code_name = '' , has_vehicle_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+			    console.log("query: ", query);
+			    indsertUpdateData(query);
+	   		}
+
+		    messageData = sendNoQrCode(id,"no-qr-code-vehicle", "has-qr-code-vehicle", "<strong>Well done. QR code received <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/qr-code-icon.png' width='15%' height='15%'> </strong><br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); ;
+
+	   }else if(nextTemplate == "qr-code-property-upload-mlutipart"){
+
+	   		if(fileName){
+	   			var query = "update sphchatdb.sph_chatbot set ad_property_qr_code_name = '"+fileName+"'  , has_property_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+			    console.log("query: ", query);
+			    indsertUpdateData(query);
+	   			
+	   		}else{
+
+	   			var query = "update sphchatdb.sph_chatbot set ad_property_qr_code_name = ''  , has_property_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+			    console.log("query: ", query);
+			    indsertUpdateData(query);
+	   		}
+
+		    messageData = sendNoQrCode(id,"no-qr-code-property", "has-qr-code-property", "<strong>Well done. QR code received <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/qr-code-icon.png' width='15%' height='15%'> </strong><br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
+
+	   }
+	   }catch(e) {
+        console.log(e);
+        messageData = sendError("Error occured due to inactive session.Please start from beginning");
+    }
+    if(!messageData){
+    	 messageData = sendError("Invalid Requst Administrator has been notified.");
+    }
+
+   sendResult(res, messageData);
+
+});
+
+
+function sendError(message){
+
+	var messageData = {
+			"status" : 500,
+			"errMsg" : message,
+			"payload" : {}
+		}
+	return messageData;
+}
+
+//POST request
+app.post('/message', cors(), async function (req, res) {
+  var data = req.body;
+  console.log("request recieved :" , data);
+
+  var id = data.id;
+  console.log("contact number as id :" , id);
+
+  var message = data.textMessage;
+  console.log("message received:" , message);
+
+  var nextTemplate = data.nextTemplate;
+  console.log("nextTemplate received:" , nextTemplate);
+
+   var hash_token = req.headers['chat-cookie'];
+
+  console.log(req.headers);
+  console.log("hash_token received:" , hash_token);
+
+	if(hash_token){
+		res.header("chat-cookie",hash_token);
+	}
+  
+
+  var messageData; 
+ 
+	try{
+
+	if(!id || !hash_token){
+		 var token = getToken();
+		 messageData = sendForm(); 
+	   	 console.log("sending message :" , messageData);
+	   	 res.header("chat-cookie",token);
+	  }
+ // else if (message){
+
+	// start conversation now.
+  	else if(nextTemplate == 'sample'){
+
+  		var firstName = message.firstcontactname;
+	  	var lastName = message.lastcontactname;
+	  	var email = message.email;
+	  	var nextTemplate = data.nextTemplate;
+		var create_timestamp = new Date(new Date()+" UTC").toISOString().slice(0, 19).replace('T', ' ');
+		
+
+		if(firstName){
+			
+			var query = "insert into sphchatdb.sph_chatbot (first_name, last_name, phone_number, email, create_timestamp, token, validity) values ('"+firstName+"','"+lastName+"','"+id+"','"+email+"','"+create_timestamp+"', '"+hash_token+"', now() + INTERVAL '"+session_ttl_minutes+"' MINUTE)";
+			console.log("query: ", query);
+			indsertUpdateData(query);
+		}
+		
+  		messageData = sendSample(id, "publication" , "", "What's the nature of your advertisement? <br/>Click on the ad type that you'd like me to walk you through👇 <br/>These are our advertisement sample."); 
+  	
+  	}else if(nextTemplate == 'publication'){
+
+  		if(message){
+
+	   		console.log("nextTemplate message : ", message);
+	  		var query = "update sphchatdb.sph_chatbot set ad_type = '"+message+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		console.log("query: ", query);
+	  		indsertUpdateData(query);
+	  		messageData = sendPublication(id, "adType" , "sample","<strong>"+message +"</strong>, Noting it down, thanks for your selection 😇 <br/>Next, let's select which publication you'd like the ad to appear in."); 
+	   	
+	   	}else{
+	   		messageData = sendPublication(id, "adType" , "sample", "let's select which publication you'd like the ad to appear in."); 
+	   	}
+	
+  	
+  	}else if(nextTemplate == 'adType'){
+
+  		if(message){
+
+  			console.log("nextTemplate message : ", message);
+	  		var query = "update sphchatdb.sph_chatbot set publication = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		console.log("query: ", query);
+	  		indsertUpdateData(query);
+	  		messageData = sendAvailableDates(id, "availableDate" , "publication" ,"<strong>"+message +"</strong> it is! <br/>As a quick note, there is a cut off time of 2 pm the next day for "+message+" 😊 <br/>Please select the available START and END date of publication 🗓"); 
+	  	
+	 	}else{
+	 		messageData = sendAvailableDates(id, "availableDate" , "publication" ,"As a quick note, there is a cut off time of 2 pm the next day.<br/>Please select the available START and END date of publication 🗓"); 
+	 	}
+
+  		
+  	}else if(nextTemplate == 'availableDate'){
+
+
+  		if(message){
+	   			
+	   			console.log("nextTemplate message : ", message);
+		  		var from_to_date_range= message.split(" - ");
+		  		var query = "update sphchatdb.sph_chatbot set start_date = '"+from_to_date_range[0]+"', end_date = '"+from_to_date_range[1]+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+		  		console.log("query: ", query);
+		  		indsertUpdateData(query);
+		  		messageData = sendSaleRentService(id, "sale-rent-service" , "adType","Okay, <strong>"+ message +"</strong>. Advertisement is for Sale ,Rent or Services ?"); 
+
+	   		}else{
+
+	   			messageData = sendSaleRentService(id, "sale-rent-service" , "adType","Okay. Advertisement is for Sale ,Rent or Services ?"); 
+
+	   		}
+
+  		
+  	
+  	}else if(nextTemplate == 'sale-rent-service'){
+
+
+  			var query = "select ad_type from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by create_timestamp  DESC LIMIT 1";
+
+  			var results = await fetchData(query);
+  			console.log("callback ",results);
+
+  			var ad_type = results.ad_type;
+			console.log("ad_type from select query returned value :", ad_type);
+
+			if(message){
+				   	var query_insert_update = "update sphchatdb.sph_chatbot set ad_nature = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+			  		console.log("query: ", query_insert_update);
+			  		indsertUpdateData(query_insert_update);
+
+
+		  		if(ad_type.trim() == VEHICLE){
+
+		  				messageData = sendMakeBrandVehicle(id, "upload-vehicle-image" , "availableDate", "Sure, <strong>"+ message +"</strong>. 👍 <br/>What is the Make or Brand of the Vehicle, please type in  🖊 <br/>Example: Acura, Alfa Romeo, Aston Martin, <br/> Audi, Bentley, BMW, Bugatti, Buick etc"); 
+
+		  		}else if(ad_type.trim() == PROPERTY){
+			  			
+			  			messageData = sendPropertyType(id, "upload-property-image" , "availableDate", "Sure, <strong>"+ message +"</strong>. 👍 <br/>What is the type of the property?");  
+
+		  		}
+		  		else if(ad_type.trim() == OTHERS){
+
+		  			messageData = sendServiceType(id, "nature-services" , "availableDate", "Sure, <strong>"+ message +"</strong>. 👍 <br/>What is the nature of Services , please type in  🖊 <br/>Example: IT, Maid, Security, Home Service, Gardner, Care Taker."); 
+		  		}
+		  		else{
+		  			console.log("Unhandled use case received!, ignoring.");
+		  		}			
+			}else {
+
+			
+		  		if(ad_type.trim() == VEHICLE){
+
+		  				messageData = sendMakeBrandVehicle(id, "upload-vehicle-image" , "availableDate", "Sure. 👍 <br/>What is the Make or Brand of the Vehicle, please type in  🖊 <br/>Example: Acura, Alfa Romeo, Aston Martin, <br/> Audi, Bentley, BMW, Bugatti, Buick etc"); 
+
+		  		}else if(ad_type.trim() == PROPERTY){
+			  			
+			  			messageData = sendPropertyType(id, "upload-property-image" , "availableDate", "Sure. 👍 <br/>What is the type of the property?");  
+
+		  		}
+		  		else if(ad_type.trim() == OTHERS){
+
+		  			// Service will handle later
+		  			messageData = sendServiceType(id, "nature-services" , "availableDate", "Sure, <strong>"+ message +". 👍 </strong><br/>What is the nature of Services , please type in  🖊 <br/>Example: IT, Maid, Security, Home Service, Gardner, Care Taker."); 
+		  		}
+		  		else{
+		  			console.log("Unhandled use case received!, ignoring.");
+		  		}	
+
+			}
+			
+
+
+  	}if(nextTemplate == "has-upload-service-image"){
+	   		
+		    messageData = sendHasQrCode(id, "qr-code-services" , "nature-services", "Do you also have the QR Code ?");
+
+	   }
+	   if(nextTemplate == "qr-code-services-upload-mlutipart"){
+			
+			 messageData = sendNoQrCode(id, "no-qr-code-services" , "qr-code-services", "What is the service charge in SGD? Example: 500 /day, 100 / hr etc <br/>");
+
+	   }
+	   if(nextTemplate == "has-qr-code-vehicle"){
+
+		    messageData = sendHasQrCode(id, "qr-code-vehicle" , "upload-vehicle-image", "Do you also have the QR Code ?");
+
+	   } 
+	   if(nextTemplate == "has-qr-code-services"){
+
+		    messageData = sendHasQrCode(id, "qr-code-vehicle" , "upload-vehicle-image", "Do you also have the QR Code ?");
+
+	   }else if(nextTemplate == "has-qr-code-property"){
+
+		    messageData = sendHasQrCode(id, "qr-code-property" , "upload-property-image", "Do you also have the QR Code ?");
+
+	   }else if(nextTemplate == "qr-code-vehicle-upload-mlutipart"){
+
+		    messageData = sendNoQrCode(id,"no-qr-code-vehicle", "qr-code-vehicle", "What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); ;
+
+	   }else if(nextTemplate == "qr-code-property-upload-mlutipart"){
+
+		    messageData = sendNoQrCode(id,"no-qr-code-property", "qr-code-property", "What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
+
+	   }else if(nextTemplate == "nature-services"){
+
+  		if(message){
+
+  			var query = "update sphchatdb.sph_chatbot set service_nature = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		console.log("query: ", query);
+	  		indsertUpdateData(query);
+
+	  		messageData = sendUploadAdImage(id, "has-upload-service-image" , "sale-rent-service", "Noted, <strong>"+ message +". 👍 </strong><br/>Please upload your advertisement image.");  
+	   			
+	   	}else{
+
+	   		messageData = sendUploadAdImage(id, "has-upload-service-image" , "sale-rent-service", "Noted. 👍 <br/>Please upload your advertisement image.");  
+	   	}
+
+  		
+
+  	}else if(nextTemplate == "upload-vehicle-image"){
+
+  		if(message){
+
+  			var query = "update sphchatdb.sph_chatbot set vehicle_brand = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		console.log("query: ", query);
+	  		indsertUpdateData(query);
+
+	  		messageData = sendUploadAdImage(id, "has-qr-code-vehicle" , "sale-rent-service", "Noted, <strong>"+ message +". 👍 </strong><br/>Please upload your vehicle image.");  
+	   			
+	   	}else{
+
+	   		messageData = sendUploadAdImage(id, "has-qr-code-vehicle" , "sale-rent-service", "Noted. 👍 <br/>Please upload your vehicle image.");  
+	   	}
+
+  		
+
+  	}else if(nextTemplate == "upload-property-image"){
+
+  		if(message){
+
+	   			var query = "update sphchatdb.sph_chatbot set property_type = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+		  		console.log("query: ", query);
+		  		indsertUpdateData(query);
+
+		  		messageData = sendUploadAdImage(id, "has-qr-code-property" , "sale-rent-service", "Noted, <strong>"+ message +". 👍</strong> <br/>Please upload your property image.");  		
+	   	}else{
+
+	   		 messageData = sendUploadAdImage(id, "has-qr-code-property" , "sale-rent-service", "Noted. 👍 <br/>Please upload your property image.");  
+	   	}
+
+  		
+
+  	}else if(nextTemplate == "qr-code-services"){
+
+  		if(message == 'Yes, QR Code'){
+
+  			messageData = sendUploadAdImage(id,"qr-code-services-upload-mlutipart", "has-qr-code-services" , "Noted. Yes 👍 Please upload the QR Code.");
+
+  		}else{
+
+  			messageData = sendNoQrCode(id,"no-qr-code-services", "has-qr-code-services" , "Noted. 👍 <br/>What is the service charge in SGD? Example: 500 /day, 100 / hr etc <br/>"); 
+  		}
+  	
+  	}else if(nextTemplate == "qr-code-vehicle"){
+
+  		if(message == 'Yes, QR Code'){
+
+  			messageData = sendUploadAdImage(id,"qr-code-vehicle-upload-mlutipart", "has-qr-code-vehicle" , "Noted. Yes 👍 Please upload the QR Code.");
+
+  		}else{
+
+  			messageData = sendNoQrCode(id,"no-qr-code-vehicle", "has-qr-code-vehicle" , "Noted. 👍 <br/>What is the price in SGD? <br/>Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
+  		}
+  	
+  	}else if(nextTemplate == "qr-code-property"){
+
+  		if(message == 'Yes, QR Code'){
+
+  			messageData = sendUploadAdImage(id,"qr-code-property-upload-mlutipart", "has-qr-code-property" , "Noted. Yes 👍 Please upload the QR Code.");
+
+  		}else{
+
+  			messageData = sendNoQrCode(id,"no-qr-code-property", "has-qr-code-property", "Noted 👍 <br/>What is the price in SGD? <br/>Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
+
+  		}
+		
+  	}else if(nextTemplate == "no-qr-code-services"){
+
+  		if(message){
+
+  			var query = "update sphchatdb.sph_chatbot set service_charge = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		console.log("query: ", query);
+	  		indsertUpdateData(query);
+
+  		}
+  		var query = "select publication from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+		var pub = await fetchData(query);
+		var choosen_language =  pub.publication;
+
+		var text_language_specific = "";
+
+		if(choosen_language == "Lianhe ZaoBao"){
+
+			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise, you can click on  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/><br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
+
+		}else if(choosen_language == "The Straits Times"){
+
+			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/><br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
+
+		}
+
+  		messageData = sendAdText(id, "paynow-service" , "qr-code-services-upload-mlutipart", "Okay, <strong>"+ message +". 👍 </strong><br/>" + text_language_specific ); 
+
+  		
+  	}else if(nextTemplate == "no-qr-code-property"){
+
+
+  		if(message){
+
+  				var query = "update sphchatdb.sph_chatbot set property_price = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+		  		console.log("query: ", query);
+		  		indsertUpdateData(query);
+
+		  		messageData = sendBedRoomsInproperty(id, "property-bedrooms-number" , "qr-code-property-upload-mlutipart", "Okay,<strong> "+ message +". 👍 </strong><br/>How many bedrooms are there in the property? <br/>Example: 1, 2, 3, 4, 5 <br/>NOTE: Only numbers are accepted."); 
+
+	   			
+	   	}else{
+
+	   		   messageData = sendBedRoomsInproperty(id, "property-bedrooms-number" , "qr-code-property-upload-mlutipart", "Okay. 👍 <br/>How many bedrooms are there in the property? <br/>Example: 1, 2, 3, 4, 5 <br/>NOTE: Only numbers are accepted."); 
+
+	   	}
+
+  		
+  	}else if(nextTemplate == "no-qr-code-vehicle"){
+
+
+  		if(message){
+	   			
+	   			var query = "update sphchatdb.sph_chatbot set vehicle_price = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+		  		console.log("query: ", query);
+		  		indsertUpdateData(query);
+
+		  		messageData = sendVehicleRegistrationDate(id, "vehicle-registration-date" , "qr-code-vehicle-upload-mlutipart", "Okay, <strong>"+ message +". 👍</strong> <br/>What is the Registration date ? 🗓");
+	   	}else{
+
+	   			messageData = sendVehicleRegistrationDate(id, "vehicle-registration-date" , "qr-code-vehicle-upload-mlutipart", "Okay. 👍 <br/>What is the Registration date ? 🗓");
+
+	   	}
+
+  		
+  	
+  	}else if(nextTemplate == "property-bedrooms-number"){
+
+
+  		if(message){
+	   			
+	   			var query = "update sphchatdb.sph_chatbot set property_bedrooms = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+		  		console.log("query: ", query);
+		  		indsertUpdateData(query);
+
+		  		messageData = sendPropertySize(id, "text-to-advertise-property" , "no-qr-code-property", "Noted. <strong>"+message+" </strong>bedrooms. <br/>What is property size in sqft. <br/>Example: 3000, 3200, 4000 NOTE: Only numbers are accepted. ");	
+	   	}else{
+
+				messageData = sendPropertySize(id, "text-to-advertise-property" , "no-qr-code-property", "Noted. <br/>What is property size in sqft. <br/>Example: 3000, 3200, 4000 NOTE: Only numbers are accepted. ");		   		
+	   	}
+
+  		
+  	
+  	}else if(nextTemplate == "vehicle-registration-date"){
+
+  		if(message){
+
+  			var query = "update sphchatdb.sph_chatbot set vehicle_reg_date = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		console.log("query: ", query);
+	  		indsertUpdateData(query);
+	  		messageData = sendVehicleMileage(id, "text-to-advertise-vehicle" , "no-qr-code-vehicle", "Noted. It's <strong>"+ message +"</strong>. <br/>Please share the mileage. <br/>Example: $ 9800 / yr "); 
+	   			
+	   	}else{
+
+	   		messageData = sendVehicleMileage(id, "text-to-advertise-vehicle" , "no-qr-code-vehicle", "Noted. <br/>Please share the mileage. <br/>Example: $ 9800 / yr "); 
+	   	}
+
+  	}else if(nextTemplate == "text-to-advertise-property"){
+
+		var query = "select publication from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"' order by create_timestamp  DESC LIMIT 1";
+		var pub = await fetchData(query);
+		var choosen_language =  pub.publication;
+
+		var text_language_specific = "";
+
+		if(choosen_language == "Lianhe ZaoBao"){
+
+			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise, you can click on  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/><br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
+
+		}else if(choosen_language == "The Straits Times"){
+
+			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/><br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
+
+		}
+
+  		if(message){
+
+  			var query = "update sphchatdb.sph_chatbot set property_area = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		console.log("query: ", query);
+	  		indsertUpdateData(query);
+
+	  		messageData = sendAdText(id, "paynow-property" , "property-bedrooms-number", "Okay. It's <br/><strong>"+ message +"</strong>.<br/>" +text_language_specific); 
+	    }else{
+
+	    	messageData = sendAdText(id, "paynow-property" , "property-bedrooms-number", "Okay.<br/>"+text_language_specific); 
+	    }
+
+  		
+  }else if(nextTemplate == "text-to-advertise-vehicle"){
+
+  		var query = "select publication from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+		var pub = await fetchData(query);
+		var choosen_language =  pub.publication;
+
+		var text_language_specific = "";
+
+		if(choosen_language == "Lianhe ZaoBao"){
+
+			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise otherwise you can click do the following:<br>. Click on <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='10%' height='10%'> to start again or click  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/><br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
+
+		}else if(choosen_language == "The Straits Times"){
+
+			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/><br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
+
+		}
+
+  		if(message){
+	   			
+	   			var query = "update sphchatdb.sph_chatbot set vehicle_mileage = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+		  		console.log("query: ", query);
+		  		indsertUpdateData(query);
+
+		  		messageData = sendAdText(id, "paynow-vehicle" , "vehicle-registration-date", "Okay. It's <br/><strong>"+ message +"</strong>.<br/>"+text_language_specific);
+		  		
+	   	}else{
+
+	   		messageData = sendAdText(id, "paynow-vehicle" , "vehicle-registration-date", "Okay.<br/>"+text_language_specific);
+	   	}
+
+  //paynow-property
+  }else if(nextTemplate == "paynow-service"){
+
+  		if(message){
+
+	  		var query_insert_update = "update sphchatdb.sph_chatbot set advertisement_text = '"+message+"', is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		console.log("query: ", query_insert_update);
+	  		indsertUpdateData(query_insert_update);
+		}
+
+		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  order by create_timestamp  DESC LIMIT 1";
+		var result = await fetchData(query); 
+		var first_name = result.first_name;
+		var last_name = result.last_name;
+		var publication = result.publication;
+		var ad_type = result.ad_type;
+		var ad_nature = result.ad_nature;
+		var start_date = new Date(result.start_date).toISOString().slice(0,10);
+		var end_date =  new Date(result.end_date).toISOString().slice(0,10);
+		var days = result.day; 
+		var price = 0;
+
+		if(publication == 'The Straits Times'){
+			price = UNIT_PRICE_TST;
+		}else if(publication == 'Lianhe ZaoBao'){
+			price = UNIT_PRICE_ZB;
+		}
+
+		var sub_total = days * price;
+		var GST = (GST_RATE * sub_total) / 100;
+		var total = sub_total + GST;
+
+		//
+
+		let userMap = new Map()
+		userMap.set("Advertiser Name", first_name + " " + last_name);
+		userMap.set("Publication",  publication);
+		userMap.set("Advertisement Type",  ad_type);
+		userMap.set("Ad Nature",  ad_nature);
+		userMap.set("Ad Start Date",  start_date);
+		userMap.set("Ad End Date",  end_date);
+		userMap.set("Ad Duration (days)",  days );
+		userMap.set("Unit Price (in SGD)",  price);
+		userMap.set("GST Rate",  GST_RATE);
+		userMap.set("GST (in SGD)",  GST);
+		userMap.set("Total (in SGD)",  total);
+		userMap.set("Payment Status",  "Waiting Payment Gateway Confirmation");
+		
+		//emailRecepientMetadata(id,userMap);
+		//
+
+		messageData = orderInformation(id, "", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
+
+  		// var textTosend = "This ad will cost $ "+price+" / Day <br/>*Above price is without GST.<br/><br/>Summary:<br/>Ad-Type: "+ad_type+"<br/>Publication: "+publication+"<br/>Start-Date: "+start_date+"<br/>End-Date: "+end_date+"<br/>Package information: "+days+" Days<br/>Unit: x "+days+" Days<br/>Sub Total: $ "+sub_total+"<br/>GST: $ "+GST+" (7%)<br/>Total: $ "+total+"<br/><br/>Payment confirmation will be sent to the given email address.";
+  	
+  	 //   messageData = orderInformation(id, "" , "text-to-advertise-service", textTosend);
+
+
+	}else if(nextTemplate == "paynow-vehicle"){
+
+  		if(message){
+
+	  		var query_insert_update = "update sphchatdb.sph_chatbot set advertisement_text = '"+message+"' , is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		console.log("query: ", query_insert_update);
+	  		indsertUpdateData(query_insert_update);
+		}
+
+		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  order by create_timestamp  DESC LIMIT 1";
+		var result = await fetchData(query); 
+		var first_name = result.first_name;
+		var last_name = result.last_name;
+		var publication = result.publication;
+		var ad_type = result.ad_type;
+		var ad_nature = result.ad_nature;
+		var start_date = new Date(result.start_date).toISOString().slice(0,10);
+		var end_date =  new Date(result.end_date).toISOString().slice(0,10);
+		var days = result.day; 
+		var price = 0;
+
+		if(publication == 'The Straits Times'){
+			price = UNIT_PRICE_TST;
+		}else if(publication == 'Lianhe ZaoBao'){
+			price = UNIT_PRICE_ZB;
+		}
+
+
+		var sub_total = days * price;
+		var GST = (GST_RATE * sub_total) / 100;
+		var total = sub_total + GST;
+
+		//
+
+		let userMap = new Map()
+		userMap.set("Advertiser Name", first_name + " " + last_name);
+		userMap.set("Publication",  publication);
+		userMap.set("Advertisement Type",  ad_type);
+		userMap.set("Ad Nature",  ad_nature);
+		userMap.set("Ad Start Date",  start_date);
+		userMap.set("Ad End Date",  end_date);
+		userMap.set("Ad Duration (days)",  days );
+		userMap.set("Unit Price (in SGD)",  price);
+		userMap.set("GST Rate",  GST_RATE);
+		userMap.set("GST (in SGD)",  GST);
+		userMap.set("Total (in SGD)",  total);
+		userMap.set("Payment Status",  "Waiting Payment Gateway Confirmation");
+		
+		//emailRecepientMetadata(id,userMap);
+		//
+
+		messageData = orderInformation(id, "", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
+
+  		// var textTosend = "This ad will cost $ "+price+" / Day <br/>*Above price is without GST.<br/><br/>Summary:<br/>Ad-Type: "+ad_type+"<br/>Publication: "+publication+"<br/>Start-Date: "+start_date+"<br/>End-Date: "+end_date+"<br/>Package information: "+days+" Days<br/>Unit: x "+days+" Days<br/>Sub Total: $ "+sub_total+"<br/>GST: $ "+GST+" (7%)<br/>Total: $ "+total+"<br/><br/>Payment confirmation will be sent to the given email address.";
+  	
+  	 //   messageData = orderInformation(id, "" , "text-to-advertise-vehicle", textTosend);
+
+
+	}else if(nextTemplate == "paynow-property"){
+
+		if(message){
+
+			var query_insert_update = "update sphchatdb.sph_chatbot set advertisement_text = '"+message+"' , is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		console.log("query: ", query_insert_update);
+	  		indsertUpdateData(query_insert_update);
+	  	}
+
+  		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by create_timestamp  DESC LIMIT 1";
+		var result = await fetchData(query); 
+		var first_name = result.first_name;
+		var last_name = result.last_name;
+		var publication = result.publication;
+		var ad_type = result.ad_type;
+		var ad_nature = result.ad_nature;
+		var start_date = new Date(result.start_date).toISOString().slice(0,10);
+		var end_date =  new Date(result.end_date).toISOString().slice(0,10);
+		var days = result.day; 
+		var price = 0;
+
+		if(publication == 'The Straits Times'){
+			price = UNIT_PRICE_TST;
+		}else if(publication == 'Lianhe ZaoBao'){
+			price = UNIT_PRICE_ZB;
+		}
+
+		var sub_total = days * price;
+		var GST = (GST_RATE * sub_total) / 100;
+		var total = sub_total + GST;
+
+
+		//
+
+		let userMap = new Map()
+		userMap.set("Advertiser Name", first_name + " " + last_name);
+		userMap.set("Publication",  publication);
+		userMap.set("Advertisement Type",  ad_type);
+		userMap.set("Ad Nature",  ad_nature);
+		userMap.set("Ad Start Date",  start_date);
+		userMap.set("Ad End Date",  end_date);
+		userMap.set("Ad Duration (days)",  days );
+		userMap.set("Unit Price (in SGD)",  price);
+		userMap.set("GST Rate",  GST_RATE);
+		userMap.set("GST (in SGD)",  GST);
+		userMap.set("Total (in SGD)",  total);
+		userMap.set("Payment Status",  "Waiting Payment Gateway Confirmation");
+
+		//emailRecepientMetadata(id,userMap);
+		//
+
+		messageData = orderInformation(id, "", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
+
+  		//var textTosend = "This ad will cost $ "+price+" / Day <br/>*Above price is without GST.<br/><br/>Summary:<br/>Ad-Type: "+ad_type+"<br/>Publication: "+publication+"<br/>Start-Date: "+start_date+"<br/>End-Date: "+end_date+"<br/>Package information: "+days+" Days<br/>Unit: x "+days+" Days<br/>Sub Total: $ "+sub_total+"<br/>GST: $ "+GST+" (7%)<br/>Total: $ "+total+"<br/><br/>Payment confirmation will be sent to the given email address.";
+  	
+  	   //messageData = orderInformation(id, "" , "text-to-advertise-property", textTosend);
+  }
+
+	}catch(e) {
+        console.log(e);
+       messageData = sendError("Error occured due to inactive session.Please start from beginning");
+    }	
+
+    if(!messageData){
+    	 messageData = sendError("Invalid Requst Administrator has been notified.");
+    }
+   sendResult(res, messageData);
+
+});
+
+
+// send order information
+
+function orderInformation(id, templateName, previousTemplate , unitcost , adtype, publication, startdate, enddate, days, subtotal, gst, total ){
+
+
+	var uniqueTemplateId = getTemplateId();
+
+	var messageData = {
+			    "status" : 200,
+			    "msg" : "Success",
+			    "payload" : {
+			        "id" : id,
+			        "textOption" : {
+			              "enableText": "false",
+			              "autoComplete": "off"
+			         },
+			         "previousTemplate" : {
+			           "templateName" : previousTemplate,
+			           "isEnabled" : false,
+			       },
+			        "nextTemplate" : templateName,
+			        "templateName" : "showTextOrderReceiptTemplate",
+			        "templateElement" : {
+			            templateId: "23455",
+			            orderHeader : "Order Information",
+			 			summaryHeader : "Summary",
+						payText : "Pay Now",
+						payLink : "https://www.straitstimes.com/",
+						headerText : "<span class='text11'>This ad will cost $"+unitcost+"/day</span> <br /> <span class='textred'>*Above Price is  without GST</span>", 
+						bottomText : "Payment confirmation will be sent to the given email address",
+						buttonElement : [{
+			                     buttonText : "Pay Now",
+			                     buttonId : "paynow-btn-id",
+				         		 buttonClass: "pay-now-class",
+			                     buttonLink  : "https://www.straitstimes.com/"
+			             }],
+
+						orderElement : [
+							{
+								id: 1,
+								orderType: "text",
+								orderKey : "Ad Type",
+							    orderValue : adtype
+							},
+							{
+								id: 2,
+								orderType: "text",
+								orderKey : "Publication",
+							    orderValue : publication
+							},
+							{
+								id: 3,
+								orderType: "text",
+								orderKey : "Start Date",
+							    orderValue : startdate
+							},
+							{
+								id: 4,
+								orderType: "text",
+								orderKey : "End Date",
+							    orderValue : enddate
+							},
+							{
+								id: 5,
+								orderType: "text",
+								orderKey : "Package Information",
+							    orderValue : days  + " Days"
+							},
+							{
+								id: 6,
+								orderType: "text",
+								orderKey : "Unit",
+							    orderValue : "x " + days + " days"
+							},
+							{
+								id: 7,
+								orderType: "text",
+								orderKey : "Sub Total",
+							    orderValue : "$ " + subtotal
+							},
+							{
+								id: 8,
+								orderType: "text",
+								orderKey : "GST",
+							    orderValue : "$ " + gst + "(" + GST_RATE + "%)"
+							},
+							{
+								id: 9,
+								orderType: "text",
+								orderKey : "Total",
+							    orderValue : "$ " + total
+							}
+
+						]
+			         }
+			     }
+			}
+
+	return messageData;
+
+}
+
+
+// send advertisement text
+
+function sendAdText(id, templateName, previousTemplate, templateText){
+
+	 var uniqueTemplateId = getTemplateId();
+
+	var messageData = {
+			"status" : 200,
+		    "msg" : "Success",
+		    "payload" : {
+		    	"id" :id,
+		    	"previousTemplate" : {
+		           "templateName" : previousTemplate,
+		           "isEnabled" : true,
+		       },
+		    	"nextTemplate": templateName,
+		        "templateName" : "sendmessage",
+		        "textOption" : {
+		              "enableText": true,
+		              "maxTextLength": 15,
+		              "autoComplete": "on",
+		              "autoOptions": ["Alabama","Alaska","Arizona","Arkansas","Arkansas2","Barkansas"]
+		         },
+
+		        "templateElement" : { 
+		        	templateId: uniqueTemplateId,
+		        	templateText : templateText
+		        }
+	    }
+	}
+	return messageData;
+}
+// send property size
+
+function sendPropertySize(id, templateName, previousTemplate, templateText){
+
+	 var uniqueTemplateId = getTemplateId();
+
+	var messageData = {
+			"status" : 200,
+		    "msg" : "Success",
+		    "payload" : {
+		    	"id" :id,
+		    	"previousTemplate" : {
+		           "templateName" : previousTemplate,
+		           "isEnabled" : true,
+		       },
+		    	"nextTemplate": templateName,
+		        "templateName" : "sendmessage",
+		        "textOption" : {
+		              "enableText": true,
+		              "maxTextLength": 10,
+		              "autoComplete": "on",
+		              "autoOptions": ["9000 ","2000","3000","1000","2400","600"]
+		         },
+
+		        "templateElement" : { 
+		        	templateId: uniqueTemplateId,
+		        	templateText : templateText  
+		        }
+	    }
+	}
+	return messageData;
+
+}
+
+// send mileage vehicle
+
+function sendVehicleMileage(id, templateName, previousTemplate, templateText){
+
+	 var uniqueTemplateId = getTemplateId();
+ 
+
+	var messageData = {
+			"status" : 200,
+		    "msg" : "Success",
+		    "payload" : {
+		    	"id" :id,
+		    	"previousTemplate" : {
+		           "templateName" : previousTemplate,
+		           "isEnabled" : true,
+		       },
+		    	"nextTemplate": templateName,
+		        "templateName" : "sendmessage",
+		        "textOption" : {
+		              "enableText": true,
+		              "maxTextLength": 15,
+		              "autoComplete": "on",
+		              "autoOptions": [" $ 8900 / yr "," $ 6200 / yr "," $ 800 / yr "," $ 6700 / yr "," $ 9800 / yr "," $ 5000 / yr "]
+		         },
+
+		        "templateElement" : { 
+		        	templateId: uniqueTemplateId,
+		        	templateText : templateText
+		        }
+	    }
+	}
+	return messageData;
+}
+
+
+function sendServiceType(id, templateName, previousTemplate, templateText){
+
+	 var uniqueTemplateId = getTemplateId();
+ 
+
+	var messageData = {
+			"status" : 200,
+		    "msg" : "Success",
+		    "payload" : {
+		    	"id" :id,
+		    	"previousTemplate" : {
+		           "templateName" : previousTemplate,
+		           "isEnabled" : true,
+		       },
+		    	"nextTemplate": templateName,
+		        "templateName" : "sendmessage",
+		        "textOption" : {
+		              "enableText": true,
+		              "maxTextLength": 15,
+		              "autoComplete": "on",
+		              "autoOptions": ["Maid","IT","Printing","Hawker","Care Taker","Home Services","Laundry"]
+		         },
+
+		        "templateElement" : { 
+		        	templateId: uniqueTemplateId,
+		        	templateText : templateText   
+		        }
+	    }
+	}
+	return messageData;
+
+}
+
+// send rooms in property
+
+
+function sendBedRoomsInproperty(id, templateName, previousTemplate, templateText){
+
+	 var uniqueTemplateId = getTemplateId();
+ 
+
+	var messageData = {
+			"status" : 200,
+		    "msg" : "Success",
+		    "payload" : {
+		    	"id" :id,
+		    	"previousTemplate" : {
+		           "templateName" : previousTemplate,
+		           "isEnabled" : true,
+		       },
+		    	"nextTemplate": templateName,
+		        "templateName" : "sendmessage",
+		        "textOption" : {
+		              "enableText": true,
+		              "maxTextLength": 1,
+		              "autoComplete": "on",
+		              "autoOptions": ["1","2","3","4","5","6"]
+		         },
+
+		        "templateElement" : { 
+		        	templateId: uniqueTemplateId,
+		        	templateText : templateText   
+		        }
+	    }
+	}
+	return messageData;
+}
+
+// send no qr code query
+
+function sendNoQrCode(id, templateName, previousTemplate, templateText){
+
+	 var uniqueTemplateId = getTemplateId();
+ 
+
+	var messageData = {
+			"status" : 200,
+		    "msg" : "Success",
+		    "payload" : {
+		    	"id" :id,
+		    	"previousTemplate" : {
+		           "templateName" : previousTemplate,
+		           "isEnabled" : true,
+		       },
+		    	"nextTemplate": templateName,
+		        "templateName" : "sendmessage",
+		        "textOption" : {
+		              "enableText": true,
+		              "maxTextLength": 10,
+		              "autoComplete": "on",
+		              "autoOptions": ["40000","10000","20000","70000","60000","50000"]
+		         },
+
+		        "templateElement" : { 
+		        	templateId: uniqueTemplateId,
+		        	templateText : templateText     
+		        }
+	    }
+	}
+	return messageData;
+
+}
+
+//send API response
+
+function callSendAPI(messageData) {
+  request({
+    uri: 'https://localhost:3000/uri',
+    method: 'POST',
+    json: messageData
+
+  }, function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      var recipientId = body.recipient_id;
+      var messageId = body.message_id;
+
+      if (messageId) {
+        console.log("Successfully sent message with id %s to recipient %s",
+          messageId, recipientId);
+      } else {
+      console.log("Successfully called Send API for recipient %s",
+        recipientId);
+      }
+    } else {
+      console.error("Failed calling Send API", response.statusCode, response.statusMessage, body.error);
+    }
+  });
+}
+
+
+// send vehicle registration date
+function sendVehicleRegistrationDate(id, templateName, previousTemplate, templateText){
+
+ var uniqueTemplateId = getTemplateId();
+ 
+ var messageData = {
+				    "status" : 200,
+				    "msg" : "Success",
+				    "payload" : {
+				        "id" : "12345678",
+				       "textOption" : {
+				              "enableText": "false",
+				              "autoComplete": "off"
+				         },
+				          "previousTemplate" : {
+				           "templateName" : previousTemplate,
+				           "isEnabled" : true,
+				       },
+				        "nextTemplate" : templateName,
+				         "templateName" : "showDateTimeAndRangePickerTemplate",
+				        "templateElement" : {
+						       templateId: uniqueTemplateId,
+						       templateText: templateText,
+						       isRange: false,
+						       timePickerConfig: {
+						          timePicker: false,
+						          timePickerFormat: "24",
+						          timeMinuteStep: "15",
+						       },
+						       autoClose: false,
+						       showCalendars: true,
+						       showHeader: false,
+						       showFooter: false,
+						       startEmpty: true,
+							   dateFormat : "YYYY-MM-DD",
+						       calendarPosition: "top",
+						       calendarCount : 1,
+						       pastDateDisable: false,
+						       futureDateDisable: true,
+						       disableDates: [],
+						       selectDateRangeBetween : {},
+						       dateDisableBetween : []
+						}
+
+				    }
+				}
+	return messageData;
+
+}
+
+// send vehicle make or brand message
+function sendMakeBrandVehicle(id, templateName, previousTemplate, templateText){
+
+	 var uniqueTemplateId = getTemplateId();
+ 
+
+		var messageData = {
+			"status" : 200,
+		    "msg" : "Success",
+		    "payload" : {
+		    	"id" :id,
+		    	"previousTemplate" : {
+			           "templateName" : previousTemplate,
+			           "isEnabled" : true,
+			       },
+		    	"nextTemplate": templateName,
+		        "templateName" : "sendmessage",
+		        "textOption" : {
+		              "enableText": true,
+		              "maxTextLength": 15,
+		              "autoComplete": "on",
+		              "autoOptions": ["Acura","Alfa","Romeo","Aston Martin","Bentley","Bugatti"]
+		         },
+
+		        "templateElement" : { 
+		        	templateId: uniqueTemplateId,
+		        	templateText : templateText  
+		        }
+	    }
+	}
+	return messageData;
+}
+
+
+// create connection object
+ function getConnection(){
+
+	var connection = mysql.createConnection({
+	  host     : 'localhost',
+	  user     : 'root',
+	  password : '',
+	  database : 'sphchatdb'
+	});
+	connection.connect();
+	return connection;
+}
+
+
+ async function fetchData(query_str){
+
+
+			var aPromise =  new Promise(function(resolve, reject) { 
+			var connection = getConnection();
+  			connection.query(query_str, function (error, results, fields) {
+
+		    console.log('The fetchData solution before is: ', results);
+
+		    connection.end();
+			 if (error) {
+                reject(err);
+            } else {
+            	console.log("results[0]", results[0]);
+                resolve(results[0]);
+            }
+		   
+		});
+
+	 }).then((response) => {
+	 	console.log("response", response)
+		return response;
+	});
+
+	 var return_result = await aPromise;
+	console.log("return_result", return_result);
+	return JSON.parse(JSON.stringify(return_result));
+
+}
+
+
+// Database communication
+
+function indsertUpdateData(query){
+	
+	var connection = getConnection();
+	connection.query(query, function (error, results, fields) {
+		  if (error) throw error;
+		  console.log('The indsertUpdateData solution is: ', results);
+	});
+	connection.end();
+}
+
+//ask for upload image
+function sendUploadAdImage(id, templateName, previousTemplate, templateText){
+
+ var uniqueTemplateId = getTemplateId();
+ 
+
+	var messageData = {
+	    "status" : 200,
+	    "msg" : "Success",
+	    "payload" : {
+	    	"id" :id,
+	    	"previousTemplate" : {
+	           "templateName" : previousTemplate,
+	           "isEnabled" : true,
+	       },
+		    "nextTemplate": templateName,
+	        "templateName" : "showAttachFileTemplate",
+	        "textOption" : {
+	              "enableText": false,
+	              "autoComplete": "off"
+	         },
+	        "templateElement" : {
+	        	templateId: uniqueTemplateId,
+	        	templateText : templateText,
+	        	isMultiple : false,
+	         	mimeType : "image/*",
+	            dataSizeToUpload: "2097152",
+	            name : "uploadFile"
+			}
+	    }
+	}
+	return messageData;
+}
+
+
+// send sale rent or service query
+
+function sendHasQrCode(id, templateName, previousTemplate, templateText){
+
+	 var uniqueTemplateId = getTemplateId();
+ 
+
+	var messageData = {
+		    "status" : 200,
+		    "msg" : "Success",
+		    "payload" : {
+		    	"id" :id,
+		    	"previousTemplate" : {
+		           "templateName" : previousTemplate,
+		           "isEnabled" : true,
+		       },
+		    	"nextTemplate": templateName,
+		        "templateName" : "showQuickRepliesTemplate",
+		        "textOption" : {
+		              "enableText": false,
+		              "autoComplete": "off"
+		         },
+
+		        "templateElement" : {
+		        	templateId: uniqueTemplateId,
+		        	templateText : templateText, 
+		             question: "",
+		             replies: [
+		                'Yes, QR Code',
+		                'No, QR Code'
+		              ]
+		        }
+		    }
+		}
+	return messageData;
+}
+
+// send sale rent or service query
+
+function sendSaleRentService(id, templateName, previousTemplate, templateText){
+
+	 var uniqueTemplateId = getTemplateId();
+ 
+
+	var messageData = {
+		    "status" : 200,
+		    "msg" : "Success",
+		    "payload" : {
+		    	"id" :id,
+		    	"previousTemplate" : {
+		           "templateName" : previousTemplate,
+		           "isEnabled" : true,
+		       },
+		    	"nextTemplate": templateName,
+		        "templateName" : "showQuickRepliesTemplate",
+		        "textOption" : {
+		              "enableText": false,
+		              "autoComplete": "off"
+		         },
+		        "templateElement" : {
+		        	templateId: uniqueTemplateId,
+		        	templateText : templateText, 
+		             question: "",
+		             replies: [
+		                'Sale',
+		                'Rent',
+		                'Services'
+		              ]
+		        }
+		    }
+		}
+	return messageData;
+}
+
+// send sale rent or service query
+
+function sendPropertyType(id, templateName, previousTemplate, templateText){
+
+ var uniqueTemplateId = getTemplateId();
+ 
+
+	var messageData = {
+		    "status" : 200,
+		    "msg" : "Success",
+		    "payload" : {
+		    	"id" :id,
+		    	"previousTemplate" : {
+		           "templateName" : previousTemplate,
+		           "isEnabled" : true,
+		       },
+		    	"nextTemplate": templateName,
+		        "templateName" : "showQuickRepliesTemplate",
+		        "textOption" : {
+		              "enableText": false,
+		              "autoComplete": "off"
+		         },
+		        "templateElement" : {
+		        	templateText : templateText, 
+		        	templateId: uniqueTemplateId,
+		             question: "",
+		             replies: [
+		                'Landed',
+		                'Private Apt',
+		                'Commercial'
+		              ]
+		        }
+		    }
+		}
+	return messageData;
+}
+
+// send calender to available dates to choose from and to
+
+function sendAvailableDates(id, templateName, previousTemplate, templateText){
+	
+	var end_date_available = (new Date(new Date().getTime() + (90*60*60*24*1000))).toISOString().slice(0,10);
+	var start_date_available = (new Date(new Date().getTime() + (0*60*60*24*1000))).toISOString().slice(0,10);
+	var uniqueTemplateId = getTemplateId();
+ 
+
+	var messageData = {
+				    "status" : 200,
+				    "msg" : "Success",
+				    "payload" : {
+				        "id" : "12345678",
+				       "textOption" : {
+				              "enableText": "false",
+				              "autoComplete": "off"
+				         },
+				          "previousTemplate" : {
+				           "templateName" : previousTemplate,
+				           "isEnabled" : true,
+				       },
+				        "nextTemplate" : templateName,
+				         "templateName" : "showDateTimeAndRangePickerTemplate",
+				        "templateElement" : {
+						       templateId: uniqueTemplateId,
+						       templateText: templateText,
+						       isRange: true,
+						       timePickerConfig: {
+						          timePicker: false,
+						          timePickerFormat: "24",
+						          timeMinuteStep: "15",
+						       },
+						       autoClose: false,
+						       showCalendars: true,
+						       showHeader: false,
+						       showFooter: false,
+						       startEmpty: true,
+							   dateFormat : "YYYY-MM-DD",
+						       calendarPosition: "top",
+						       calendarCount : 1,
+						       pastDateDisable: true,
+						       futureDateDisable: false,
+						       disableDates: [],
+						       selectDateRangeBetween : {},
+						       dateDisableBetween : [
+						           { start: start_date_available, end : end_date_available }
+						       ]
+						}
+
+				    }
+				}
+	return messageData;
+}
+
+// send sendPublication
+
+function sendPublication(id, templateName, previousTemplate, templateText){
+
+	var uniqueTemplateId = getTemplateId();
+
+	 var messageData = {
+	 		"status" : 200,
+			    "msg" : "Success",
+			    "payload" : {
+			    	"id": id,
+			    	"previousTemplate" : {
+			           "templateName" : previousTemplate,
+			           "isEnabled" : true,
+			       },
+		    		"nextTemplate": templateName,
+			        "templateName" : "showGenericTemplate",
+			         "textOption" : {
+			              "enableText": false,
+			              "autoComplete": "off"
+			         },
+
+			        "templateElement" : {
+			            templateText : templateText, 
+			            templateId: uniqueTemplateId,
+			            carousel: true,
+			            templateItems : [
+			                {
+			                    imageUrl: 'https://chatbox-images.s3-ap-southeast-1.amazonaws.com/straits-times-singapore-news-logo.jpg',
+			                    title: 'The Straits Times',
+			                    subtitle: '',
+			                    buttons: [
+			                        'The Straits Times'
+			                    ]
+			                },
+			                {
+			                    imageUrl: 'https://chatbox-images.s3-ap-southeast-1.amazonaws.com/lianhe_zaobao_chinese_newspaper-logo.jpg',
+			                    title: 'Lianhe ZaoBao',
+			                    subtitle: '',
+			                    buttons: [
+			                        'Lianhe ZaoBao'
+			                    ]
+			                }
+			            ]
+			        }
+			    }
+			
+	 }
+	 return messageData;
+}
+
+
+// send advertisement Sample information
+
+function sendSample(id, templateName, previousTemplate, templateText){
+
+	var uniqueTemplateId = getTemplateId();
+
+				var messageData =  {
+			    "status" : 200,
+			    "msg" : "Success",
+			    "payload" : {
+			    	"id": id,
+			    	"previousTemplate" : {
+			           "templateName" : previousTemplate,
+			           "isEnabled" : true,
+			       },
+		    		"nextTemplate": templateName,
+			        "templateName" : "showGenericTemplate",
+			         "textOption" : {
+			              "enableText": false,
+			              "autoComplete": "off"
+			         },
+
+			        "templateElement" : {
+			            templateText : templateText, 
+			            templateId: uniqueTemplateId,
+			            carousel: true,
+			            templateItems : [
+			                {
+			                    imageUrl: 'https://chatbox-images.s3-ap-southeast-1.amazonaws.com/CHATBOT_-_VEH-01-test.png',
+			                    title: 'Vehicle',
+			                    subtitle: 'Sale or Rent Vehicle',
+			                    buttons: [
+			                        'Vehicle'
+			                    ]
+			                },
+			                {
+			                    imageUrl: 'https://chatbox-images.s3-ap-southeast-1.amazonaws.com/CHATBOT_-_VEH_chinese-01.png',
+			                    title: 'Vehicle',
+			                    subtitle: 'Sale or Rent Vehicle',
+			                    buttons: [
+			                        'Vehicle'
+			                    ]
+			                },
+			                {
+			                    imageUrl: 'https://chatbox-images.s3-ap-southeast-1.amazonaws.com/CHATBOT_-_ST_PROP2-01.png',
+			                    title: 'Properties',
+			                    subtitle: 'Sale or Rent Property',
+			                    buttons: [
+			                        'Property'
+			                    ]
+			                },
+			                {
+			                    imageUrl: 'https://chatbox-images.s3-ap-southeast-1.amazonaws.com/CHATBOT_-_Chiense_PROP-01.png',
+			                    title: 'Properties',
+			                    subtitle: 'Sale or Rent Property',
+			                    buttons: [
+			                        'Property'
+			                    ]
+			                },
+			                {
+			                    imageUrl: 'https://chatbox-images.s3-ap-southeast-1.amazonaws.com/CHATBOT_-_OTHERS-01.png',
+			                    title: 'Others',
+			                    subtitle: 'Services',
+			                    buttons: [
+			                        'Others'
+			                    ]
+			                },
+			                {
+			                    imageUrl: 'https://chatbox-images.s3-ap-southeast-1.amazonaws.com/CHATBOT_-_OTHERS_CHINESE-01.png',
+			                    title: 'Others',
+			                    subtitle: 'Services',
+			                    buttons: [
+			                        'Others'
+			                    ]
+			                }
+			            ]
+			        }
+			    }
+			}
+
+	return messageData;
+}
+
+
+
+// send form 
+
+function sendForm(){
+    
+    var uniqueTemplateId = getTemplateId();
+
+			var messageData =  {
+		    "status" : 200,
+		    "msg" : "Success",
+		    "payload" : {
+		    	"id": "",
+		    	"nextTemplate":"sample",
+		    	"previousTemplate" : {
+		           "templateName" : "",
+		           "isEnabled" : true,
+		       },
+		        "templateName" : "showFormTemplate",
+		        "textOption" : {
+		              "enableText": false,
+		              "autoComplete": "off"
+		         },
+		        "templateElement" : {
+		            formHeader : "Contact Information",
+		            templateId: uniqueTemplateId,
+		            formNeedLabel : true,
+		            formName: "contact-form",
+		            formElement : [
+		                {
+		                    formType: "text",
+		                    formId: "first-name-id",
+		                    formElemName: "firstcontactname",
+		                    formLabel: "First Name",
+		                    formMinLength: 3,
+		                    formMaxLength: 20,
+		                    formPlaceholder: "First Name",
+		                    formFormat: "string",
+		                    isReadonly: false,
+		                    isDisabled: false,
+		                    isRequired: true,
+		                    errorMsgs :{
+		                        common: "Please enter First Name"
+		                    }
+		                },
+		                {
+		                    formType: "text",
+		                    formId: "last-name-id",
+		                    formElemName: "lastcontactname",
+		                    formLabel: "Last Name",
+		                    formMinLength: 3,
+		                    formMaxLength: 20,
+		                    formPlaceholder: "Last Name",
+		                    formFormat: "string",
+		                    isReadonly: false,
+		                    isDisabled: false,
+		                    isRequired: true,
+		                    errorMsgs :{
+		                        common: "Please enter Last Name"
+		                    }
+		                },
+		                {
+		                    formType: "email",
+		                    formId: "email-id",
+		                    formElemName: "email",
+		                    formLabel: "Email",
+		                    formMaxLength: 50,
+		                    formPlaceholder: "Email",
+		                    formFormat: "string",
+		                    isRequired: true,
+		                    isReadonly: false,
+		                    isDisabled: false,
+		                    errorMsgs :{
+		                        common: "Please enter a valid email.",
+		                    }
+		                },
+		                 {
+		                     formType: "number",
+		                     formId: "mobile-id",
+		                     formElemName: "mobile",
+		                     formLabel: "Mobile",
+		                     formMaxLength: 20,
+		                     formPlaceholder: "Mobile",
+		                     formFormat: "number",
+		                     isRequired: true,
+		                     isReadonly: false,
+		                     isDisabled: false,
+		                     patternValidation : "\d+",
+		                     errorMsgs :{
+		                          common: "Please enter a valid Mobile Number",
+		                     }
+		                 }
+		            ]
+		        }
+		    }
+		}
+	return messageData;
+}
+
+
+//Referece
+//https://nodemailer.com/about/
+// async..await is not allowed in global scope, must use a wrapper
+async function emailRecepientMetadata(recipient, userMap) {
+
+  // Generate test SMTP service account from ethereal.email
+  // Only needed if you don't have a real mail account for testing
+  //let testAccount = await nodemailer.createTestAccount();
+
+  // create reusable transporter object using the default SMTP transport
+   //var mailbody = "Hi Team,\n\nThis is an auto-generated email, please do not reply!\nRecipient communicated to Chat Bot with the following information.\n\nMETADATA";
+
+   var mailbody = "Hi Team,\n\nThis is an auto-generated email, please do not reply!\nRecipient communicated to Chat Bot with the following information.\n\n\n";
+  
+   var table_header = "<!DOCTYPE html PUBLIC '-//W3C//DTD HTML 4.01//EN' 'http://www.w3.org/TR/html4/loose.dtd'> <head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'> <style> #customers {font-family: 'Trebuchet MS', Arial, Helvetica, sans-serif; border-collapse: collapse; width: 50%; } #customers td, #customers th {border: 1px solid #ddd; padding: 8px; } #customers tr:nth-child(even){background-color: #f2f2f2;} #customers tr:hover {background-color: #ddd;} #customers th {padding-top: 12px; padding-bottom: 12px; text-align: center; background-color: #4CAF50; color: white; } </style> </head> <body> <table  id='customers'>";
+   var table_data = "<tr><th>ADVERTISEMENT PARAMETERS</th><th>CHOOSEN VALUES</th> </tr>"; 
+   var table_bottom = "</table> </body></html>";
+
+
+   for (let [key, value] of userMap) {
+		  console.log(key + ' = ' + value)
+		  var unit_data = "<tr><td align='center'>"+key+"</td><td align='center'>"+ value +"</td></tr>";
+       	  table_data = table_data + unit_data;
+	}
+
+
+  var final_table = table_header + table_data + table_bottom;
+   //mailbody = mailbody.replace("METADATA", final_table);
+   //mailbody = mailbody + final_table+ "\n\n\nThanks";
+  let transporter = nodemailer.createTransport({
+    host: "email-smtp.us-west-2.amazonaws.com",
+    port: 2465,
+    secure: true, // true for 465, false for other ports
+    auth: {
+      user: "AKIAYROJ3LFCISD5CW7N", // generated ethereal user
+      pass: "BLipykM3N1MTIyQfaW2c87MWv4LecXHPXipppJ+qvKgBJ" // generated ethereal password
+    }
+  });
+
+  // send mail with defined transport object
+  let info = await transporter.sendMail({
+    from: 'sphtechdatateam@outlook.com', // sender address
+    to: "sphtech-growth@sph.com.sg", // list of receivers
+    subject: "ChatBot Communication with Recipient Id - " + recipient, // Subject line
+    //text: mailbody // plain text body
+    html: "<p>Hi Team,<br><br>This is an auto-generated email, please do not reply!<br>Recipient communicated to Chat Bot with the following information.<br><br><br></p>" + final_table // html body
+  });
+
+  console.log("Message sent: %s", info.messageId);
+  // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+  // Preview only available when sending through an Ethereal account
+  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+  // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+}
+
+
+function sendResult(res, messageData){
+   
+   var outJson = JSON.stringify(messageData);
+   res.header("Access-Control-Expose-Headers", "chat-cookie");
+   console.log("outJson: ",outJson);
+   res.end(JSON.stringify(outJson));
+
+}
+
+
+function getTemplateId(){
+ 
+	var currentdate = new Date(); 
+	var datetime = currentdate.getDate() + ""
+                + (currentdate.getMonth()+1)  + "" 
+                + currentdate.getFullYear() + ""  
+                + currentdate.getHours() + ""  
+                + currentdate.getMinutes() + "" 
+                + currentdate.getSeconds();
+    return datetime;
+}
+
+function getGenericDate(advanceDays){
+
+		var today = new Date();
+		var dd = today.getDate() + advanceDays;
+
+		var mm = today.getMonth()+1; 
+		var yyyy = today.getFullYear();
+		if(dd<10) 
+		{
+		    dd='0'+dd;
+		} 
+
+		if(mm<10) 
+		{
+		    mm='0'+mm;
+		} 
+		
+	return yyyy+'-'+mm+'-'+dd;
+}
+
+
+//console.log(getToken());
+
+function getToken(){
+	var date = new Date();
+	var result = srs()+"_"+date.getTime();
+	return result;
+}
+
+
+var signed_field_names="access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code,auth_indicator";
+var secretKey="bc9b5fa608704cf887dc7d04118597a10d17715a8b0549859fa61d1585cd0ac35bfa9cf88fc344378c72c759c676f3e321485d5cd92849afb0445dbf4d560dd7862bca7c7abe448280ccf01dd0c306d918f099a1499142b8a2185f2be77d41da34368038c7844f1d885025368fe8bea27dc497f2f0b64754bab17ecf15b12798";
+
+
+let fieldMap = new Map()
+		fieldMap.set("access_key", "0a55c2a315283e859cb440319f4fdffc");
+		fieldMap.set("transaction_uuid",  "0394509345039453094");
+		fieldMap.set("profile_id",  "9003077D-8945-4B00-8773-2CEB1D6E7D40");
+		fieldMap.set("signed_field_names",  "access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code,auth_indicator");
+		fieldMap.set("unsigned_field_names",  "");
+		fieldMap.set("signed_date_time",  "2020-07-21T11:22:13Z");
+		fieldMap.set("locale",  "en" );
+		fieldMap.set("transaction_type",  "authorization");
+		fieldMap.set("reference_number",  "12345-chatbot");
+		fieldMap.set("amount",  "350");
+		fieldMap.set("currency",  "SGD");
+		fieldMap.set("bill_to_forename",  "shankar");
+		fieldMap.set("bill_to_surname",  "singh");
+		fieldMap.set("bill_to_email",  "sssingh@sph.com.sg");
+		fieldMap.set("bill_to_phone",  "77777777");
+		fieldMap.set("bill_to_address_line1",  "1 jalan anak bukit");
+		fieldMap.set("bill_to_address_city",  "singapore");
+		fieldMap.set("bill_to_address_state",  "singapore");
+		fieldMap.set("bill_to_address_country",  "singapore");
+		fieldMap.set("bill_to_address_postal_code",  "588776");
+		fieldMap.set("auth_indicator",  0);
+		
+
+function sign(){
+	var finalSign= buildDataToSign();
+	console.log("finalSign: ", finalSign);
+	var signDataEncoded = signData(finalSign);
+	console.log("signDataEncoded: ", signDataEncoded);
+	return signDataEncoded;
+}
+
+function buildDataToSign() {
+        var signedFieldNames = signed_field_names.split(",");
+        console.log("signedFieldNames: ", signedFieldNames);
+        var  dataToSign= [];
+        var index =0;
+        for (var i = 0; i < signedFieldNames.length; i++) {
+           dataToSign[index] = signedFieldNames[i] + "=" +fieldMap.get(signedFieldNames[i]);
+         //  console.log("dataToSign[index]: ", dataToSign[index]);
+           index++;
+        }
+        return commaSeparate(dataToSign);
+}
+
+function commaSeparate (dataToSign) {
+    return dataToSign.join();
+}
+
+function signData(data) {
+	 let hmac = crypto.createHmac('sha256', secretKey);
+	 let signed = hmac.update(Buffer.from(data, 'utf-8')).digest("hex");
+	 let encoded = base64encode(signed);
+
+	//let _key64 = (Buffer.from(secretKey, 'hex')).toString('base64');
+	//let encoded = crypto.createHmac('sha256', _key64).update(data, "binary").digest('hex');
+    return encoded;
+}
+
+sign();
+
