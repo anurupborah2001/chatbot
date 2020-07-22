@@ -26,7 +26,8 @@ var bodyParser = require('body-parser'),
   srs = require('secure-random-string'),
   helmet = require('helmet'),
   morgan = require('morgan'),
-  crypto = require('crypto');
+  crypto = require('crypto'),
+  multerS3 = require('multer-s3');
   const { base64encode, base64decode } = require('nodejs-base64');
 
 
@@ -45,14 +46,18 @@ var bodyParser = require('body-parser'),
   app.use(helmet.noSniff()); 
   app.use(helmet.noCache());
 
+  var AWS = require('aws-sdk');
+  var s3 = new AWS.S3();
+
  // const nodemailer = require("nodemailer");
 
   // Database initialization
   var connection = mysql.createConnection({
-	  host     : 'localhost',
-	  user     : 'root',
-	  password : '',
-	  database : 'sphchatdb'
+	  host     : process.env.CHATBOT_HOSTNAME,
+	  user     : process.env.CHATBOT_USERNAME,
+	  password : process.env.CHATBOT_PASSWORD,
+	  database : process.env.CHATBOT_DB,
+	  port     : process.env.CHATBOT_PORT
 	});
 
 /*
@@ -123,7 +128,19 @@ app.get("/welcome", cors(), (req, res, next) => {
 
 
 //upload destination needs to change it with s3 later.
-var upload = multer({ dest: '/Users/sssingh/upload/' })
+//var upload = multer({ dest: '/Users/sssingh/upload/' })
+var upload = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: process.env.CHATBOT_S3_UPLOAD_BUCKET_NAME,
+    metadata: function (req, file, cb) {
+      cb(null, {fieldName: file.fieldname});
+    },
+    key: function (req, file, cb) {
+      cb(null, Date.now().toString())
+    }
+  })
+})
 
 app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
    
