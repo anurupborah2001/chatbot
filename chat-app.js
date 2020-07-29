@@ -1,13 +1,3 @@
-/*
- * Copyright 2016-present, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
-/* jshint node: true, devel: true */
 'use strict';
 
 var SERVER_URL = 'https://7ccf727d.ngrok.io/';
@@ -26,8 +16,13 @@ var bodyParser = require('body-parser'),
   srs = require('secure-random-string'),
   helmet = require('helmet'),
   morgan = require('morgan'),
-  crypto = require('crypto');
-  const { base64encode, base64decode } = require('nodejs-base64');
+  crypto = require('crypto'),
+  microtime = require('microtime'),
+  uniqid = require('uniqid'),
+  aws = require('aws-sdk'),
+  multerS3 = require('multer-s3'),
+  s3 = new aws.S3(),
+  gmdate = require('phpdate-js').gmdate;
 
 
   //npm install --save express  
@@ -55,37 +50,8 @@ var bodyParser = require('body-parser'),
 	  database : 'sphchatdb'
 	});
 
-/*
- *  Create ad category list add future ad addion into thus section.
- *
- */
 
-var adCatagoryList = [
-  "Vehicle",
-  "Properties"/*,
-  "Jobs",
-  "Travel",
-  "Personal",
-  "Business",
-  "Education" */
-];
-
-/*
-* Create ad publication category list add future ad addion into thus section.
-*
-*/
-
-var adPublicationCategoryList = [
-  "The Straits Times",
-  "Lianhe ZaoBao" 
-];
-
-/*
-* Create ad Type category list add future ad addion into thus section.
-*
-*/
-
-// constants
+// constants starts here
 
 var GST_RATE = 7;
 var VEHICLE = "Vehicle";
@@ -96,8 +62,15 @@ var SERVICES = "Services";
 var UNIT_PRICE_TST = 28;
 var UNIT_PRICE_ZB = 23;
 var OTHERS = "Others";
-var session_ttl_minutes = 10;
+var session_ttl_minutes = 50;
+var signed_field_names="access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code,auth_indicator";
+var secretKey="bc9b5fa608704cf887dc7d04118597a10d17715a8b0549859fa61d1585cd0ac35bfa9cf88fc344378c72c759c676f3e321485d5cd92849afb0445dbf4d560dd7862bca7c7abe448280ccf01dd0c306d918f099a1499142b8a2185f2be77d41da34368038c7844f1d885025368fe8bea27dc497f2f0b64754bab17ecf15b12798";
+var access_key = "0a55c2a315283e859cb440319f4fdffc";
+var profile_id = "9003077D-8945-4B00-8773-2CEB1D6E7D40";
+var payment_url = "https://testsecureacceptance.cybersource.com/pay";
+var s3_bucket_name_chatbot_advertiserimage = "s3-chatbot-advertiser-image";
 
+// ends constants here
 
 app.listen(3000, () => {
  console.log("Server running on port 3000");
@@ -105,7 +78,7 @@ app.listen(3000, () => {
 
 //Get request
 app.get("/", cors(), (req, res, next) => {
- res.json(["Hello","How","Can","I","Help"]);
+ res.json(["Bad request received.","/"]);
 });
 
 
@@ -116,15 +89,31 @@ app.get("/favicon.ico", cors(), (req, res, next) => {
 
 //Get request
 app.get("/welcome", cors(), (req, res, next) => {
- res.json(["Hi","Hello","You","We","All"]);
+ res.json(["Bad request received.", "/welcome"]);
 });
 
 
 
 
-//upload destination needs to change it with s3 later.
-var upload = multer({ dest: '/Users/sssingh/upload/' })
 
+//Reference https://stackoverflow.com/questions/40494050/uploading-image-to-amazon-s3-using-multer-s3-nodejs
+//https://www.npmjs.com/package/multer-s3
+//s3 upload
+//var uploads3 = multer({
+//    storage: multerS3({
+//       s3: s3,
+//       bucket: s3_bucket_name_chatbot_advertiserimage,
+//       key: function (req, file, cb) {
+//           console.log(file);
+//           cb(null, file.originalname); //use getGenericDate(0) aditionally to save file date wise, for unique file key date in yyyy-mm-dd format.
+//       }
+//   })
+//});
+
+//app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next) {
+
+//local storage comment next two lines below and uncomment above set of code to enable s3 upload.
+var upload = multer({ dest: '/Users/sssingh/upload/' })
 app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
    
    // req.file is the name of your file in the form above, here 'uploaded_file'
@@ -150,7 +139,7 @@ app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
    var messageData; 
 
    var hash_token = req.headers['chat-cookie'];
-    console.log(req.headers);
+   console.log(req.headers);
 
    console.log("hash_token received:" , hash_token);
 
@@ -177,7 +166,7 @@ app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
 			    indsertUpdateData(query);
 	   		}
 	   		
-		    messageData = sendHasQrCode(id, "qr-code-services" , "nature-services", "<strong>Great <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/qr-code-icon.png' width='15%' height='15%'>. Service picture received </strong>🖇 <br/>Do you also have the QR Code ?");
+		    messageData = sendHasQrCode(id, "qr-code-services" , "nature-services", "Great, Service picture received.🖇 <br/>Do you also have the QR Code ?");
 
 	   }
 	   if(nextTemplate == "qr-code-services-upload-mlutipart"){
@@ -189,7 +178,7 @@ app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
 			    indsertUpdateData(query);
 	   		}
 	   		
-			 messageData = sendNoQrCode(id, "no-qr-code-services" , "qr-code-services", "<strong>Well done. QR code received <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/qr-code-icon.png' width='15%' height='15%'> </strong><br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable.");
+			 messageData = sendNoQrCode(id, "no-qr-code-services" , "qr-code-services", "<strong>Well done. QR code received.<br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable.");
 
 	   }
 	   if(nextTemplate == "has-qr-code-vehicle"){
@@ -201,7 +190,7 @@ app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
 			    indsertUpdateData(query);
 	   		}
 	   		
-		    messageData = sendHasQrCode(id, "qr-code-vehicle" , "upload-vehicle-image", "<strong>Great <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/image-icon.png' width='15%' height='15%'>. Vehicle picture received </strong>🖇 <br/>Do you also have the QR Code ?");
+		    messageData = sendHasQrCode(id, "qr-code-vehicle" , "upload-vehicle-image", "Great Vehicle picture received.🖇 <br/>Do you also have the QR Code ?");
 
 	   }  if(nextTemplate == "has-qr-code-services"){
 
@@ -212,7 +201,7 @@ app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
 			    indsertUpdateData(query);
 	   		}
 	   		
-		    messageData = sendHasQrCode(id, "qr-code-services" , "has-upload-service-image", "<strong>Great <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/image-icon.png' width='15%' height='15%'>. Service picture received </strong>🖇 <br/>Do you also have the QR Code ?");
+		    messageData = sendHasQrCode(id, "qr-code-services" , "has-upload-service-image", "Great Service picture received.🖇 <br/>Do you also have the QR Code ?");
 
 	   }else if(nextTemplate == "has-qr-code-property"){
 
@@ -224,7 +213,7 @@ app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
 			    indsertUpdateData(query);
 	   		}
 
-		    messageData = sendHasQrCode(id, "qr-code-property" , "upload-property-image", "<strong>Great <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/image-icon.png' width='15%' height='15%'>. Property picture received </strong>🖇 <br/>Do you also have the QR Code ?");
+		    messageData = sendHasQrCode(id, "qr-code-property" , "upload-property-image", "Great Property picture received.🖇 <br/>Do you also have the QR Code ?");
 
 	   }else if(nextTemplate == "qr-code-vehicle-upload-mlutipart"){
 
@@ -240,7 +229,7 @@ app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
 			    indsertUpdateData(query);
 	   		}
 
-		    messageData = sendNoQrCode(id,"no-qr-code-vehicle", "has-qr-code-vehicle", "<strong>Well done. QR code received <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/qr-code-icon.png' width='15%' height='15%'> </strong><br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); ;
+		    messageData = sendNoQrCode(id,"no-qr-code-vehicle", "has-qr-code-vehicle", "<strong>Well done. QR code received.<br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); ;
 
 	   }else if(nextTemplate == "qr-code-property-upload-mlutipart"){
 
@@ -256,7 +245,7 @@ app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
 			    indsertUpdateData(query);
 	   		}
 
-		    messageData = sendNoQrCode(id,"no-qr-code-property", "has-qr-code-property", "<strong>Well done. QR code received <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/qr-code-icon.png' width='15%' height='15%'> </strong><br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
+		    messageData = sendNoQrCode(id,"no-qr-code-property", "has-qr-code-property", "<strong>Well done. QR code received.<br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
 
 	   }
 	   }catch(e) {
@@ -316,7 +305,6 @@ app.post('/message', cors(), async function (req, res) {
 	   	 console.log("sending message :" , messageData);
 	   	 res.header("chat-cookie",token);
 	  }
- // else if (message){
 
 	// start conversation now.
   	else if(nextTemplate == 'sample'){
@@ -326,11 +314,16 @@ app.post('/message', cors(), async function (req, res) {
 	  	var email = message.email;
 	  	var nextTemplate = data.nextTemplate;
 		var create_timestamp = new Date(new Date()+" UTC").toISOString().slice(0, 19).replace('T', ' ');
+
+		var bill_to_address_line1 = message.bill_to_address_line1;
+		var bill_to_address_city = message.bill_to_address_city;
+		var bill_to_address_state = message.bill_to_address_state;
+		var bill_to_address_postal_code = message.bill_to_address_postal_code;
 		
 
 		if(firstName){
 			
-			var query = "insert into sphchatdb.sph_chatbot (first_name, last_name, phone_number, email, create_timestamp, token, validity) values ('"+firstName+"','"+lastName+"','"+id+"','"+email+"','"+create_timestamp+"', '"+hash_token+"', now() + INTERVAL '"+session_ttl_minutes+"' MINUTE)";
+			var query = "insert into sphchatdb.sph_chatbot (first_name, last_name, phone_number, email, create_timestamp, token, validity, bill_to_address_line1, bill_to_address_city, bill_to_address_state, bill_to_address_postal_code, bill_to_country) values ('"+firstName+"','"+lastName+"','"+id+"','"+email+"','"+create_timestamp+"', '"+hash_token+"', now() + INTERVAL '"+session_ttl_minutes+"' MINUTE, '"+bill_to_address_line1+"', '"+bill_to_address_city+"', '"+bill_to_address_state+"', '"+bill_to_address_postal_code+"', 'SG')";
 			console.log("query: ", query);
 			indsertUpdateData(query);
 		}
@@ -577,11 +570,11 @@ app.post('/message', cors(), async function (req, res) {
 
 		if(choosen_language == "Lianhe ZaoBao"){
 
-			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise, you can click on  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/><br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
+			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
 
 		}else if(choosen_language == "The Straits Times"){
 
-			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/><br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
+			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
 
 		}
 
@@ -666,11 +659,11 @@ app.post('/message', cors(), async function (req, res) {
 
 		if(choosen_language == "Lianhe ZaoBao"){
 
-			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise, you can click on  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/><br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
+			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
 
 		}else if(choosen_language == "The Straits Times"){
 
-			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/><br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
+			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
 
 		}
 
@@ -697,11 +690,11 @@ app.post('/message', cors(), async function (req, res) {
 
 		if(choosen_language == "Lianhe ZaoBao"){
 
-			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise otherwise you can click do the following:<br>. Click on <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='10%' height='10%'> to start again or click  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/><br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
+			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise otherwise you can click on <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='10%' height='10%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
 
 		}else if(choosen_language == "The Straits Times"){
 
-			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click  <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/><br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
+			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
 
 		}
 
@@ -718,7 +711,6 @@ app.post('/message', cors(), async function (req, res) {
 	   		messageData = sendAdText(id, "paynow-vehicle" , "vehicle-registration-date", "Okay.<br/>"+text_language_specific);
 	   	}
 
-  //paynow-property
   }else if(nextTemplate == "paynow-service"){
 
   		if(message){
@@ -750,8 +742,6 @@ app.post('/message', cors(), async function (req, res) {
 		var GST = (GST_RATE * sub_total) / 100;
 		var total = sub_total + GST;
 
-		//
-
 		let userMap = new Map()
 		userMap.set("Advertiser Name", first_name + " " + last_name);
 		userMap.set("Publication",  publication);
@@ -767,14 +757,11 @@ app.post('/message', cors(), async function (req, res) {
 		userMap.set("Payment Status",  "Waiting Payment Gateway Confirmation");
 		
 		//emailRecepientMetadata(id,userMap);
-		//
+		
+		var query_insert_update2 = "update sphchatdb.sph_chatbot set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
+	  	indsertUpdateData(query_insert_update2);
 
-		messageData = orderInformation(id, "", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
-
-  		// var textTosend = "This ad will cost $ "+price+" / Day <br/>*Above price is without GST.<br/><br/>Summary:<br/>Ad-Type: "+ad_type+"<br/>Publication: "+publication+"<br/>Start-Date: "+start_date+"<br/>End-Date: "+end_date+"<br/>Package information: "+days+" Days<br/>Unit: x "+days+" Days<br/>Sub Total: $ "+sub_total+"<br/>GST: $ "+GST+" (7%)<br/>Total: $ "+total+"<br/><br/>Payment confirmation will be sent to the given email address.";
-  	
-  	 //   messageData = orderInformation(id, "" , "text-to-advertise-service", textTosend);
-
+		messageData = orderInformation(id, "payment-gateway", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
 
 	}else if(nextTemplate == "paynow-vehicle"){
 
@@ -785,7 +772,7 @@ app.post('/message', cors(), async function (req, res) {
 	  		indsertUpdateData(query_insert_update);
 		}
 
-		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  order by create_timestamp  DESC LIMIT 1";
+		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() and is_active = false order by create_timestamp  DESC LIMIT 1";
 		var result = await fetchData(query); 
 		var first_name = result.first_name;
 		var last_name = result.last_name;
@@ -808,8 +795,6 @@ app.post('/message', cors(), async function (req, res) {
 		var GST = (GST_RATE * sub_total) / 100;
 		var total = sub_total + GST;
 
-		//
-
 		let userMap = new Map()
 		userMap.set("Advertiser Name", first_name + " " + last_name);
 		userMap.set("Publication",  publication);
@@ -825,14 +810,10 @@ app.post('/message', cors(), async function (req, res) {
 		userMap.set("Payment Status",  "Waiting Payment Gateway Confirmation");
 		
 		//emailRecepientMetadata(id,userMap);
-		//
-
-		messageData = orderInformation(id, "", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
-
-  		// var textTosend = "This ad will cost $ "+price+" / Day <br/>*Above price is without GST.<br/><br/>Summary:<br/>Ad-Type: "+ad_type+"<br/>Publication: "+publication+"<br/>Start-Date: "+start_date+"<br/>End-Date: "+end_date+"<br/>Package information: "+days+" Days<br/>Unit: x "+days+" Days<br/>Sub Total: $ "+sub_total+"<br/>GST: $ "+GST+" (7%)<br/>Total: $ "+total+"<br/><br/>Payment confirmation will be sent to the given email address.";
-  	
-  	 //   messageData = orderInformation(id, "" , "text-to-advertise-vehicle", textTosend);
-
+		
+		var query_insert_update2 = "update sphchatdb.sph_chatbot set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
+	  	indsertUpdateData(query_insert_update2);
+		messageData = orderInformation(id, "payment-gateway", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
 
 	}else if(nextTemplate == "paynow-property"){
 
@@ -866,8 +847,6 @@ app.post('/message', cors(), async function (req, res) {
 		var total = sub_total + GST;
 
 
-		//
-
 		let userMap = new Map()
 		userMap.set("Advertiser Name", first_name + " " + last_name);
 		userMap.set("Publication",  publication);
@@ -883,13 +862,120 @@ app.post('/message', cors(), async function (req, res) {
 		userMap.set("Payment Status",  "Waiting Payment Gateway Confirmation");
 
 		//emailRecepientMetadata(id,userMap);
-		//
 
-		messageData = orderInformation(id, "", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
+		var query_insert_update2 = "update sphchatdb.sph_chatbot set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
+	  	indsertUpdateData(query_insert_update2);
+		messageData = orderInformation(id, "payment-gateway", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
 
-  		//var textTosend = "This ad will cost $ "+price+" / Day <br/>*Above price is without GST.<br/><br/>Summary:<br/>Ad-Type: "+ad_type+"<br/>Publication: "+publication+"<br/>Start-Date: "+start_date+"<br/>End-Date: "+end_date+"<br/>Package information: "+days+" Days<br/>Unit: x "+days+" Days<br/>Sub Total: $ "+sub_total+"<br/>GST: $ "+GST+" (7%)<br/>Total: $ "+total+"<br/><br/>Payment confirmation will be sent to the given email address.";
-  	
-  	   //messageData = orderInformation(id, "" , "text-to-advertise-property", textTosend);
+  }else if(nextTemplate == "payment-gateway"){
+
+  	var query = "select first_name,last_name,email,phone_number,total,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_postal_code,bill_to_country from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by create_timestamp  DESC LIMIT 1";
+  	var result = await fetchData(query); 
+	var first_name = result.first_name;
+	var last_name = result.last_name;
+	var phone_number = result.phone_number;
+	var email = result.email;
+	var total = result.total;
+	var bill_to_address_line1 = result.bill_to_address_line1;
+	var bill_to_address_city = result.bill_to_address_city;
+	var bill_to_address_state = result.bill_to_address_state;
+	var bill_to_address_postal_code = result.bill_to_address_postal_code;
+	var bill_to_country = result.bill_to_country;
+
+	var transaction_uuid = uniqid();
+	var reference_number = microtime.now()+"-sphchatbot";
+	var timestamps = gmdate("Y-m-d\TH:i:s\Z").replace('GM','');
+	var finalSignedDateTime = timestamps.substring(0, timestamps.length-1)+"Z";
+
+	var uniqueTemplateId = getTemplateId();
+
+	let fieldMap = new Map()
+	fieldMap.set("access_key", access_key);
+	fieldMap.set("profile_id",  profile_id);
+	fieldMap.set("transaction_uuid",  transaction_uuid);
+	fieldMap.set("signed_field_names",  signed_field_names);
+	fieldMap.set("unsigned_field_names",  "");
+	fieldMap.set("signed_date_time",  finalSignedDateTime);
+	fieldMap.set("locale",  "en" );
+	fieldMap.set("transaction_type",  "sale");
+	fieldMap.set("reference_number",  reference_number);
+	fieldMap.set("amount",  total);
+	fieldMap.set("currency",  "SGD");
+	fieldMap.set("bill_to_forename",  first_name);
+	fieldMap.set("bill_to_surname",  last_name);
+	fieldMap.set("bill_to_email",  email);
+	fieldMap.set("bill_to_phone",  phone_number);
+	fieldMap.set("bill_to_address_line1",  bill_to_address_line1);
+	fieldMap.set("bill_to_address_city",  bill_to_address_city);
+	fieldMap.set("bill_to_address_state",  bill_to_address_state);
+	fieldMap.set("bill_to_address_country",  bill_to_country);
+	fieldMap.set("bill_to_address_postal_code",  bill_to_address_postal_code);
+	fieldMap.set("auth_indicator",  0);
+
+
+	var signedFieldNames = signed_field_names.split(",");
+    var  dataToSign= [];
+    var index =0;
+    for (var i = 0; i < signedFieldNames.length; i++) {
+       dataToSign[index] = signedFieldNames[i] + "=" +fieldMap.get(signedFieldNames[i]);
+       index++;
+    }
+    var data = dataToSign.join();
+    console.log("data:", data);
+    var signature = crypto.createHmac('sha256', secretKey)
+											.update(data)
+											.digest('base64');
+	console.log("signature:", signature);										
+
+	var html='';
+		//  html +="<!DOCTYPE html><html><body>";
+		  html += "<form action='"+payment_url+"' style= 'display:none' target = '_blank' accept-charset='utf-8' name='paymentForm' method='POST' enctype='multipart/form-data'>";
+		  html += "<input type='hidden' name='access_key' value='"+access_key+"' />";
+		  html += "<input type='hidden' name='profile_id' value='"+profile_id+"' />";
+		  html += "<input type='hidden' name='transaction_uuid' value='"+transaction_uuid+"' />";
+		  html += "<input type='hidden' name='signed_field_names' value='access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code,auth_indicator' />'";
+		  html += "<input type='hidden' name='unsigned_field_names' value='' />'";
+		  html += "<input type='hidden' name='signed_date_time' value='"+finalSignedDateTime+"' />";
+		  html += "<input type='hidden' name='locale' value='en' />'";
+		  html += "<input type='hidden' name='transaction_type' value='sale' />'";
+		  html += "<input type='hidden' name='reference_number' value='"+reference_number+"' />";
+		  html += "<input type='hidden' name='amount' value='"+total+"' />";
+		  html += "<input type='hidden' name='currency' value='SGD' />";
+		  html += "<input type='hidden' name='bill_to_forename' value='"+first_name+"' />";
+		  html += "<input type='hidden' name='bill_to_surname' value='"+last_name+"' />";
+		  html += "<input type='hidden' name='bill_to_email' value='"+email+"' />";
+		  html += "<input type='hidden' name='bill_to_phone' value='"+phone_number+"' />";
+		  html += "<input type='hidden' name='bill_to_address_line1' value='"+bill_to_address_line1+"' />";
+		  html += "<input type='hidden' name='bill_to_address_city' value='"+bill_to_address_city+"' />";
+		  html += "<input type='hidden' name='bill_to_address_state' value='"+bill_to_address_state+"' />";
+		  html += "<input type='hidden' name='bill_to_address_country' value='"+bill_to_country+"' />";
+		  html += "<input type='hidden' name='bill_to_address_postal_code' value='"+bill_to_address_postal_code+"' />";
+		  html += "<input type='hidden' name='auth_indicator' value='0' />'";
+		  html += "<input type='hidden' name='signature' value='"+signature+"' />";
+		  html += "<div style='display:none'><input type='submit' name='next' id='next' value=''/></div>";
+		  html += "</form>";
+		  html += "<script type='text/javascript'>document.forms['paymentForm'].submit();</script>";
+		 // html += "</body></html>";
+
+		  messageData ={
+				   "status" : 200,
+				   "msg" : "Success",
+				   "payload" : {
+				       "id" : id,
+				        "previousTemplate" : {
+				          "templateName" : ""
+			      },
+			       "nextTemplate" : "",
+			       "templateName" : "sendPayment",
+			       "templateElement" : {
+			           templateId: "232323",
+			           templateText: html
+			       }
+			   }
+			}
+
+		console.log("Html:",html);	
+
   }
 
 	}catch(e) {
@@ -939,7 +1025,7 @@ function orderInformation(id, templateName, previousTemplate , unitcost , adtype
 			                     buttonText : "Pay Now",
 			                     buttonId : "paynow-btn-id",
 				         		 buttonClass: "pay-now-class",
-			                     buttonLink  : "https://www.straitstimes.com/"
+			                     buttonLink  : ""
 			             }],
 
 						orderElement : [
@@ -1143,8 +1229,6 @@ function sendServiceType(id, templateName, previousTemplate, templateText){
 }
 
 // send rooms in property
-
-
 function sendBedRoomsInproperty(id, templateName, previousTemplate, templateText){
 
 	 var uniqueTemplateId = getTemplateId();
@@ -1211,33 +1295,6 @@ function sendNoQrCode(id, templateName, previousTemplate, templateText){
 	return messageData;
 
 }
-
-//send API response
-
-function callSendAPI(messageData) {
-  request({
-    uri: 'https://localhost:3000/uri',
-    method: 'POST',
-    json: messageData
-
-  }, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-      var recipientId = body.recipient_id;
-      var messageId = body.message_id;
-
-      if (messageId) {
-        console.log("Successfully sent message with id %s to recipient %s",
-          messageId, recipientId);
-      } else {
-      console.log("Successfully called Send API for recipient %s",
-        recipientId);
-      }
-    } else {
-      console.error("Failed calling Send API", response.statusCode, response.statusMessage, body.error);
-    }
-  });
-}
-
 
 // send vehicle registration date
 function sendVehicleRegistrationDate(id, templateName, previousTemplate, templateText){
@@ -1807,7 +1864,67 @@ function sendForm(){
 		                     errorMsgs :{
 		                          common: "Please enter a valid Mobile Number",
 		                     }
-		                 }
+		                 },
+		                {
+		                    formType: "bill_to_address_line1",
+		                    formId: "bill_to_address_line1",
+		                    formElemName: "bill_to_address_line1",
+		                    formLabel: "Address Line 1",
+		                    formMaxLength: 30,
+		                    formPlaceholder: "Address Line 1",
+		                    formFormat: "string",
+		                    isRequired: true,
+		                    isReadonly: false,
+		                    isDisabled: false,
+		                    errorMsgs :{
+		                        common: "Please enter a valid address.",
+		                    }
+		                },
+		                {
+		                    formType: "bill_to_address_city",
+		                    formId: "bill_to_address_city",
+		                    formElemName: "bill_to_address_city",
+		                    formLabel: "City",
+		                    formMaxLength: 30,
+		                    formPlaceholder: "City",
+		                    formFormat: "string",
+		                    isRequired: true,
+		                    isReadonly: false,
+		                    isDisabled: false,
+		                    errorMsgs :{
+		                        common: "Please enter a valid city.",
+		                    }
+		                },
+		                {
+		                    formType: "bill_to_address_state",
+		                    formId: "bill_to_address_state",
+		                    formElemName: "bill_to_address_state",
+		                    formLabel: "State",
+		                    formMaxLength: 30,
+		                    formPlaceholder: "State",
+		                    formFormat: "string",
+		                    isRequired: true,
+		                    isReadonly: false,
+		                    isDisabled: false,
+		                    errorMsgs :{
+		                        common: "Please enter a valid state.",
+		                    }
+		                },
+		                {
+		                    formType: "bill_to_address_postal_code",
+		                    formId: "bill_to_address_postal_code",
+		                    formElemName: "bill_to_address_postal_code",
+		                    formLabel: "Postal Code",
+		                    formMaxLength: 6,
+		                    formPlaceholder: "Postal Code",
+		                    formFormat: "number",
+		                    isRequired: true,
+		                    isReadonly: false,
+		                    isDisabled: false,
+		                    errorMsgs :{
+		                        common: "Please enter a valid postal code.",
+		                    }
+		                }
 		            ]
 		        }
 		    }
@@ -1865,11 +1982,7 @@ async function emailRecepientMetadata(recipient, userMap) {
   });
 
   console.log("Message sent: %s", info.messageId);
-  // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
-
-  // Preview only available when sending through an Ethereal account
   console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-  // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
 }
 
 
@@ -1923,70 +2036,3 @@ function getToken(){
 	var result = srs()+"_"+date.getTime();
 	return result;
 }
-
-
-var signed_field_names="access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code,auth_indicator";
-var secretKey="bc9b5fa608704cf887dc7d04118597a10d17715a8b0549859fa61d1585cd0ac35bfa9cf88fc344378c72c759c676f3e321485d5cd92849afb0445dbf4d560dd7862bca7c7abe448280ccf01dd0c306d918f099a1499142b8a2185f2be77d41da34368038c7844f1d885025368fe8bea27dc497f2f0b64754bab17ecf15b12798";
-
-
-let fieldMap = new Map()
-		fieldMap.set("access_key", "0a55c2a315283e859cb440319f4fdffc");
-		fieldMap.set("transaction_uuid",  "0394509345039453094");
-		fieldMap.set("profile_id",  "9003077D-8945-4B00-8773-2CEB1D6E7D40");
-		fieldMap.set("signed_field_names",  "access_key,profile_id,transaction_uuid,signed_field_names,unsigned_field_names,signed_date_time,locale,transaction_type,reference_number,amount,currency,bill_to_forename,bill_to_surname,bill_to_email,bill_to_phone,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_country,bill_to_address_postal_code,auth_indicator");
-		fieldMap.set("unsigned_field_names",  "");
-		fieldMap.set("signed_date_time",  "2020-07-21T11:22:13Z");
-		fieldMap.set("locale",  "en" );
-		fieldMap.set("transaction_type",  "authorization");
-		fieldMap.set("reference_number",  "12345-chatbot");
-		fieldMap.set("amount",  "350");
-		fieldMap.set("currency",  "SGD");
-		fieldMap.set("bill_to_forename",  "shankar");
-		fieldMap.set("bill_to_surname",  "singh");
-		fieldMap.set("bill_to_email",  "sssingh@sph.com.sg");
-		fieldMap.set("bill_to_phone",  "77777777");
-		fieldMap.set("bill_to_address_line1",  "1 jalan anak bukit");
-		fieldMap.set("bill_to_address_city",  "singapore");
-		fieldMap.set("bill_to_address_state",  "singapore");
-		fieldMap.set("bill_to_address_country",  "singapore");
-		fieldMap.set("bill_to_address_postal_code",  "588776");
-		fieldMap.set("auth_indicator",  0);
-		
-
-function sign(){
-	var finalSign= buildDataToSign();
-	console.log("finalSign: ", finalSign);
-	var signDataEncoded = signData(finalSign);
-	console.log("signDataEncoded: ", signDataEncoded);
-	return signDataEncoded;
-}
-
-function buildDataToSign() {
-        var signedFieldNames = signed_field_names.split(",");
-        console.log("signedFieldNames: ", signedFieldNames);
-        var  dataToSign= [];
-        var index =0;
-        for (var i = 0; i < signedFieldNames.length; i++) {
-           dataToSign[index] = signedFieldNames[i] + "=" +fieldMap.get(signedFieldNames[i]);
-         //  console.log("dataToSign[index]: ", dataToSign[index]);
-           index++;
-        }
-        return commaSeparate(dataToSign);
-}
-
-function commaSeparate (dataToSign) {
-    return dataToSign.join();
-}
-
-function signData(data) {
-	 let hmac = crypto.createHmac('sha256', secretKey);
-	 let signed = hmac.update(Buffer.from(data, 'utf-8')).digest("hex");
-	 let encoded = base64encode(signed);
-
-	//let _key64 = (Buffer.from(secretKey, 'hex')).toString('base64');
-	//let encoded = crypto.createHmac('sha256', _key64).update(data, "binary").digest('hex');
-    return encoded;
-}
-
-sign();
-
