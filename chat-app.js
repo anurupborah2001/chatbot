@@ -93,26 +93,29 @@ app.get("/welcome", cors(), (req, res, next) => {
 });
 
 
-//Reference https://stackoverflow.com/questions/40494050/uploading-image-to-amazon-s3-using-multer-s3-nodejs
-//https://www.npmjs.com/package/multer-s3
-//s3 upload
-//var uploads3 = multer({
-//    storage: multerS3({
-//       s3: s3,
-//       bucket: s3_bucket_name_chatbot_advertiserimage,
-//       key: function (req, file, cb) {
-//           console.log(file);
-//           cb(null, file.originalname); //use getGenericDate(0) aditionally to save file date wise, for unique file key date in yyyy-mm-dd format.
-//       }
-//   })
-//});
 
-//app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next) {
+//s3 upload starts here
+var uploads3 = multer({
+    storage: multerS3({
+       s3: s3,
+      bucket: s3_bucket_name_chatbot_advertiserimage,
+       key: function (req, file, cb) {
+           console.log(file);
+           cb(null, file.originalname); //use getGenericDate(0) aditionally to save file date wise, for unique file key date in yyyy-mm-dd format.
+       }
+   })
+});
 
+app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next) {
+
+//s3 upload ends here
+
+// local upload starts here
 //local storage comment next two lines below and uncomment above set of code to enable s3 upload.
-var upload = multer({ dest: '/Users/sssingh/upload/' })
-app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
-   
+//var upload = multer({ dest: '/Users/sssingh/upload/' })
+//app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
+// local upload ends  here   
+
    // req.file is the name of your file in the form above, here 'uploaded_file'
    // req.body will hold the text fields, if there were any 
    //var data = req.body;
