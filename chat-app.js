@@ -69,6 +69,7 @@ var access_key = process.env.ACCESS_KEY;
 var profile_id = process.env.PROFILE_ID;
 var payment_url = process.env.PAYMENT_URL;
 var s3_bucket_name_chatbot_advertiserimage = process.env.CHATBOT_S3_UPLOAD_BUCKET_NAME;
+var table = process.env.CHATBOT_DB_TABLE;
 
 // ends constants here
 
@@ -161,7 +162,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 
 	   		if(fileName){
 
-	   			var query = "update sphchatdb.sph_chatbot set ad_service_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now() and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set ad_service_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now() and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -173,7 +174,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 
 	   		if(fileName){
 
-	   			var query = "update sphchatdb.sph_chatbot set ad_service_qr_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set ad_service_qr_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -185,7 +186,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 
 	   		if(fileName){
 
-	   			var query = "update sphchatdb.sph_chatbot set ad_vehicle_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set ad_vehicle_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -196,7 +197,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 
 	   		if(fileName){
 
-	   			var query = "update sphchatdb.sph_chatbot set ad_service_image_name = '"+fileName+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set ad_service_image_name = '"+fileName+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -208,7 +209,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 	   		
 	   		if(fileName){
 
-	   			var query = "update sphchatdb.sph_chatbot set ad_property_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set ad_property_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -219,12 +220,12 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 
 	   		if(fileName){
 	   			
-	   			var query = "update sphchatdb.sph_chatbot set ad_vehicle_qr_code_name = '"+fileName+"' , has_vehicle_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set ad_vehicle_qr_code_name = '"+fileName+"' , has_vehicle_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}else{
 
-	   			var query = "update sphchatdb.sph_chatbot set ad_vehicle_qr_code_name = '' , has_vehicle_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set ad_vehicle_qr_code_name = '' , has_vehicle_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -234,13 +235,13 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 	   }else if(nextTemplate == "qr-code-property-upload-mlutipart"){
 
 	   		if(fileName){
-	   			var query = "update sphchatdb.sph_chatbot set ad_property_qr_code_name = '"+fileName+"'  , has_property_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set ad_property_qr_code_name = '"+fileName+"'  , has_property_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   			
 	   		}else{
 
-	   			var query = "update sphchatdb.sph_chatbot set ad_property_qr_code_name = ''  , has_property_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set ad_property_qr_code_name = ''  , has_property_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -323,7 +324,7 @@ app.post('/message', cors(), async function (req, res) {
 
 		if(firstName){
 			
-			var query = "insert into sphchatdb.sph_chatbot (first_name, last_name, phone_number, email, create_timestamp, token, validity, bill_to_address_line1, bill_to_address_city, bill_to_address_state, bill_to_address_postal_code, bill_to_country) values ('"+firstName+"','"+lastName+"','"+id+"','"+email+"','"+create_timestamp+"', '"+hash_token+"', now() + INTERVAL '"+session_ttl_minutes+"' MINUTE, '"+bill_to_address_line1+"', '"+bill_to_address_city+"', '"+bill_to_address_state+"', '"+bill_to_address_postal_code+"', 'SG')";
+			var query = "insert into "+table+" (first_name, last_name, phone_number, email, create_timestamp, token, validity, bill_to_address_line1, bill_to_address_city, bill_to_address_state, bill_to_address_postal_code, bill_to_country) values ('"+firstName+"','"+lastName+"','"+id+"','"+email+"','"+create_timestamp+"', '"+hash_token+"', now() + INTERVAL '"+session_ttl_minutes+"' MINUTE, '"+bill_to_address_line1+"', '"+bill_to_address_city+"', '"+bill_to_address_state+"', '"+bill_to_address_postal_code+"', 'SG')";
 			console.log("query: ", query);
 			indsertUpdateData(query);
 		}
@@ -335,7 +336,7 @@ app.post('/message', cors(), async function (req, res) {
   		if(message){
 
 	   		console.log("nextTemplate message : ", message);
-	  		var query = "update sphchatdb.sph_chatbot set ad_type = '"+message+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		var query = "update "+table+" set ad_type = '"+message+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
 	  		messageData = sendPublication(id, "adType" , "sample","<strong>"+message +"</strong>, Noting it down, thanks for your selection 😇 <br/>Next, let's select which publication you'd like the ad to appear in."); 
@@ -350,7 +351,7 @@ app.post('/message', cors(), async function (req, res) {
   		if(message){
 
   			console.log("nextTemplate message : ", message);
-	  		var query = "update sphchatdb.sph_chatbot set publication = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		var query = "update "+table+" set publication = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
 	  		messageData = sendAvailableDates(id, "availableDate" , "publication" ,"<strong>"+message +"</strong> it is! <br/>As a quick note, there is a cut off time of 2 pm the next day for "+message+" 😊 <br/>Please select the available START and END date of publication 🗓"); 
@@ -367,7 +368,7 @@ app.post('/message', cors(), async function (req, res) {
 	   			
 	   			console.log("nextTemplate message : ", message);
 		  		var from_to_date_range= message.split(" - ");
-		  		var query = "update sphchatdb.sph_chatbot set start_date = '"+from_to_date_range[0]+"', end_date = '"+from_to_date_range[1]+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+		  		var query = "update "+table+" set start_date = '"+from_to_date_range[0]+"', end_date = '"+from_to_date_range[1]+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
 		  		messageData = sendSaleRentService(id, "sale-rent-service" , "adType","Okay, <strong>"+ message +"</strong>. Advertisement is for Sale ,Rent or Services ?"); 
@@ -383,7 +384,7 @@ app.post('/message', cors(), async function (req, res) {
   	}else if(nextTemplate == 'sale-rent-service'){
 
 
-  			var query = "select ad_type from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by create_timestamp  DESC LIMIT 1";
+  			var query = "select ad_type from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by create_timestamp  DESC LIMIT 1";
 
   			var results = await fetchData(query);
   			console.log("callback ",results);
@@ -392,7 +393,7 @@ app.post('/message', cors(), async function (req, res) {
 			console.log("ad_type from select query returned value :", ad_type);
 
 			if(message){
-				   	var query_insert_update = "update sphchatdb.sph_chatbot set ad_nature = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+				   	var query_insert_update = "update "+table+" set ad_nature = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			  		console.log("query: ", query_insert_update);
 			  		indsertUpdateData(query_insert_update);
 
@@ -473,7 +474,7 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 
-  			var query = "update sphchatdb.sph_chatbot set service_nature = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+  			var query = "update "+table+" set service_nature = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
 
@@ -490,7 +491,7 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 
-  			var query = "update sphchatdb.sph_chatbot set vehicle_brand = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+  			var query = "update "+table+" set vehicle_brand = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
 
@@ -507,7 +508,7 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 
-	   			var query = "update sphchatdb.sph_chatbot set property_type = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set property_type = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
 
@@ -557,12 +558,12 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 
-  			var query = "update sphchatdb.sph_chatbot set service_charge = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+  			var query = "update "+table+" set service_charge = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
 
   		}
-  		var query = "select publication from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+  		var query = "select publication from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		var pub = await fetchData(query);
 		var choosen_language =  pub.publication;
 
@@ -586,7 +587,7 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 
-  				var query = "update sphchatdb.sph_chatbot set property_price = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+  				var query = "update "+table+" set property_price = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
 
@@ -605,7 +606,7 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 	   			
-	   			var query = "update sphchatdb.sph_chatbot set vehicle_price = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set vehicle_price = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
 
@@ -623,7 +624,7 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 	   			
-	   			var query = "update sphchatdb.sph_chatbot set property_bedrooms = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set property_bedrooms = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
 
@@ -639,7 +640,7 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 
-  			var query = "update sphchatdb.sph_chatbot set vehicle_reg_date = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+  			var query = "update "+table+" set vehicle_reg_date = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
 	  		messageData = sendVehicleMileage(id, "text-to-advertise-vehicle" , "no-qr-code-vehicle", "Noted. It's <strong>"+ message +"</strong>. <br/>Please share the mileage. <br/>Example: $ 9800 / yr "); 
@@ -651,7 +652,7 @@ app.post('/message', cors(), async function (req, res) {
 
   	}else if(nextTemplate == "text-to-advertise-property"){
 
-		var query = "select publication from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"' order by create_timestamp  DESC LIMIT 1";
+		var query = "select publication from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"' order by create_timestamp  DESC LIMIT 1";
 		var pub = await fetchData(query);
 		var choosen_language =  pub.publication;
 
@@ -669,7 +670,7 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 
-  			var query = "update sphchatdb.sph_chatbot set property_area = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+  			var query = "update "+table+" set property_area = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
 
@@ -682,7 +683,7 @@ app.post('/message', cors(), async function (req, res) {
   		
   }else if(nextTemplate == "text-to-advertise-vehicle"){
 
-  		var query = "select publication from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+  		var query = "select publication from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		var pub = await fetchData(query);
 		var choosen_language =  pub.publication;
 
@@ -700,7 +701,7 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 	   			
-	   			var query = "update sphchatdb.sph_chatbot set vehicle_mileage = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set vehicle_mileage = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
 
@@ -715,12 +716,12 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 
-	  		var query_insert_update = "update sphchatdb.sph_chatbot set advertisement_text = '"+message+"', is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		var query_insert_update = "update "+table+" set advertisement_text = '"+message+"', is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query_insert_update);
 	  		indsertUpdateData(query_insert_update);
 		}
 
-		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  order by create_timestamp  DESC LIMIT 1";
+		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  order by create_timestamp  DESC LIMIT 1";
 		var result = await fetchData(query); 
 		var first_name = result.first_name;
 		var last_name = result.last_name;
@@ -758,7 +759,7 @@ app.post('/message', cors(), async function (req, res) {
 		
 		//emailRecepientMetadata(id,userMap);
 		
-		var query_insert_update2 = "update sphchatdb.sph_chatbot set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
+		var query_insert_update2 = "update "+table+" set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
 	  	indsertUpdateData(query_insert_update2);
 
 		messageData = orderInformation(id, "payment-gateway", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
@@ -767,12 +768,12 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 
-	  		var query_insert_update = "update sphchatdb.sph_chatbot set advertisement_text = '"+message+"' , is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		var query_insert_update = "update "+table+" set advertisement_text = '"+message+"' , is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query_insert_update);
 	  		indsertUpdateData(query_insert_update);
 		}
 
-		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() and is_active = false order by create_timestamp  DESC LIMIT 1";
+		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() and is_active = false order by create_timestamp  DESC LIMIT 1";
 		var result = await fetchData(query); 
 		var first_name = result.first_name;
 		var last_name = result.last_name;
@@ -811,7 +812,7 @@ app.post('/message', cors(), async function (req, res) {
 		
 		//emailRecepientMetadata(id,userMap);
 		
-		var query_insert_update2 = "update sphchatdb.sph_chatbot set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
+		var query_insert_update2 = "update "+table+" set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
 	  	indsertUpdateData(query_insert_update2);
 		messageData = orderInformation(id, "payment-gateway", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
 
@@ -819,12 +820,12 @@ app.post('/message', cors(), async function (req, res) {
 
 		if(message){
 
-			var query_insert_update = "update sphchatdb.sph_chatbot set advertisement_text = '"+message+"' , is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+			var query_insert_update = "update "+table+" set advertisement_text = '"+message+"' , is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query_insert_update);
 	  		indsertUpdateData(query_insert_update);
 	  	}
 
-  		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by create_timestamp  DESC LIMIT 1";
+  		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by create_timestamp  DESC LIMIT 1";
 		var result = await fetchData(query); 
 		var first_name = result.first_name;
 		var last_name = result.last_name;
@@ -863,13 +864,13 @@ app.post('/message', cors(), async function (req, res) {
 
 		//emailRecepientMetadata(id,userMap);
 
-		var query_insert_update2 = "update sphchatdb.sph_chatbot set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
+		var query_insert_update2 = "update "+table+" set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
 	  	indsertUpdateData(query_insert_update2);
 		messageData = orderInformation(id, "payment-gateway", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
 
   }else if(nextTemplate == "payment-gateway"){
 
-  	var query = "select first_name,last_name,email,phone_number,total,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_postal_code,bill_to_country from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by create_timestamp  DESC LIMIT 1";
+  	var query = "select first_name,last_name,email,phone_number,total,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_postal_code,bill_to_country from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by create_timestamp  DESC LIMIT 1";
   	var result = await fetchData(query); 
 	var first_name = result.first_name;
 	var last_name = result.last_name;
