@@ -1389,7 +1389,8 @@ function sendMakeBrandVehicle(id, templateName, previousTemplate, templateText){
 
 // create connection object
 function getConnection(){
-
+    console.log("Port : " + process.env.CHATBOT_DB_PORT);
+    console.log("DB : " + process.env.CHATBOT_DB);
 	var connection = mysql.createConnection({
           host     : process.env.CHATBOT_HOSTNAME,
           user     : process.env.CHATBOT_USERNAME,
