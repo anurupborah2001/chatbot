@@ -20,7 +20,7 @@ var bodyParser = require('body-parser'),
   microtime = require('microtime'),
   uniqid = require('uniqid'),
   aws = require('aws-sdk'),
-  multerS3 = require('multer-s3');
+  multerS3 = require('multer-s3'),
   s3 = new aws.S3(),
   gmdate = require('phpdate-js').gmdate;
 
