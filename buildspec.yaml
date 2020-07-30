@@ -9,7 +9,7 @@ phases:
       - echo "Entered pre build phase"
       - aws --version
       - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
-      - REPOSITORY_URI='373035976448.dkr.ecr.ap-southeast-1.amazonaws.com/ecr-chatbot-classified-dev'
+      - REPOSITORY_URI='587223226692.dkr.ecr.ap-southeast-1.amazonaws.com/ecr-classified-chatbot-dev'
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - IMAGE_TAG=${COMMIT_HASH:=latest}
   build:
