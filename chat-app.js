@@ -107,14 +107,13 @@ var uploads3 = multer({
        s3: s3,
       bucket: s3_bucket_name_chatbot_advertiserimage,
        key: function (req, file, cb) {
-           console.log(file);
-           cb(null, file.originalname); //use getGenericDate(0) aditionally to save file date wise, for unique file key date in yyyy-mm-dd format.
-       }
-   })
-});
+      cb(null, file.filename) //use getGenericDate(0) aditionally to save file date wise, for unique file key date in yyyy-mm-dd format.
+    }
+  })
+})
 
 app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next) {
-
+//app.post('/fileupload', uploads3.single('uploadFile'), function (req, res) {
 //s3 upload ends here
 
 // local upload starts here
@@ -130,8 +129,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
    var temp = JSON.parse(JSON.stringify(req.body, null, 2));
    var values_json = JSON.parse(temp.data);
 
-   //console.log("file", req.file['filename']);
-   console.log("file", req.file['originalname']);
+   console.log("file", req.file['filename']);
 
    var id = values_json.id;
    console.log("contact number as id :" , id);
@@ -142,8 +140,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
    var nextTemplate = values_json.nextTemplate;
    console.log("nextTemplate received:" , nextTemplate);
 
-   //var fileName = req.file['filename'];
-   var fileName = req.file['originalname'];
+   var fileName = req.file['filename'];
    
    var messageData; 
 
