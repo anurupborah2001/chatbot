@@ -48,7 +48,7 @@ var bodyParser = require('body-parser'),
 	  user     : process.env.CHATBOT_USERNAME,
 	  password : process.env.CHATBOT_PASSWORD,
 	  database : process.env.CHATBOT_DB,
-	  port     : process.env.CHATBOT_PORT
+	  port     : process.env.CHATBOT_DB_PORT
 	});
 
 // constants starts here
