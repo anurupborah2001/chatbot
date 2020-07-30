@@ -41,7 +41,9 @@ var bodyParser = require('body-parser'),
   app.use(helmet.noCache());
 
  // const nodemailer = require("nodemailer");
-
+ console.log(process.env.CHATBOT_HOSTNAME);
+ console.log(process.env.CHATBOT_DB);
+ console.log(process.env.CHATBOT_USERNAME);
   // Database initialization
   var connection = mysql.createConnection({
 	  host     : process.env.CHATBOT_HOSTNAME,
@@ -50,6 +52,12 @@ var bodyParser = require('body-parser'),
 	  database : process.env.CHATBOT_DB,
 	  port     : process.env.CHATBOT_DB_PORT
 	});
+
+	connection.connect(function(err) {
+	  console.log(err);
+      if (err) throw err;
+      console.log("Connected!");
+    });
 
 // constants starts here
 
