@@ -106,11 +106,20 @@ var uploads3 = multer({
     storage: multerS3({
        s3: s3,
       bucket: s3_bucket_name_chatbot_advertiserimage,
-       key: function (req, file, cb) {
-      cb(null, file.filename) //use getGenericDate(0) aditionally to save file date wise, for unique file key date in yyyy-mm-dd format.
+	  metadata: function (req, file, cb) {
+      cb(null, file.filename); //use getGenericDate(0) aditionally to save file date wise, for unique file key date in yyyy-mm-dd format.
+    },
+    key: function (req, file, cb) {
+      cb(null, Date.now().toString())
     }
   })
 })
+
+//       key: function (req, file, cb) {
+ //     cb(null, file.filename) //use getGenericDate(0) aditionally to save file date wise, for unique file key date in yyyy-mm-dd format.
+ //   }
+//  })
+//})
 
 app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next) {
 //app.post('/fileupload', uploads3.single('uploadFile'), function (req, res) {
