@@ -44,6 +44,8 @@ var bodyParser = require('body-parser'),
  console.log(process.env.CHATBOT_HOSTNAME);
  console.log(process.env.CHATBOT_DB);
  console.log(process.env.CHATBOT_USERNAME);
+ console.log(process.env.CHATBOT_PASSWORD);
+ console.log(process.env.CHATBOT_DB_PORT);
   // Database initialization
   var connection = mysql.createConnection({
 	  host     : process.env.CHATBOT_HOSTNAME,
