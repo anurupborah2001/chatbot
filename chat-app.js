@@ -73,8 +73,8 @@ var table = process.env.CHATBOT_DB_TABLE;
 
 // ends constants here
 
-app.listen(8080, () => {
- console.log("Server running on port 8080");
+app.listen(process.env.CHATBOT_CONTAINER_PORT, () => {
+ console.log("Server running on port " + process.env.CHATBOT_CONTAINER_PORT);
 });
 
 //Get request
