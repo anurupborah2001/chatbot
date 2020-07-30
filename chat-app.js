@@ -130,7 +130,8 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
    var temp = JSON.parse(JSON.stringify(req.body, null, 2));
    var values_json = JSON.parse(temp.data);
 
-   console.log("file", req.file['filename']);
+   //console.log("file", req.file['filename']);
+   console.log("file", req.file['originalname']);
 
    var id = values_json.id;
    console.log("contact number as id :" , id);
@@ -141,7 +142,8 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
    var nextTemplate = values_json.nextTemplate;
    console.log("nextTemplate received:" , nextTemplate);
 
-   var fileName = req.file['filename'];
+   //var fileName = req.file['filename'];
+   var fileName = req.file['originalname'];
    
    var messageData; 
 
