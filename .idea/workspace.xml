@@ -18,8 +18,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/chat-app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="446">
-              <caret line="46" column="41" selection-start-line="46" selection-start-column="41" selection-end-line="46" selection-end-column="41" />
+            <state relative-caret-position="225">
+              <caret line="1390" selection-start-line="1390" selection-end-line="1390" />
             </state>
           </provider>
         </entry>
@@ -116,6 +116,8 @@
       <find>3000</find>
       <find>config/</find>
       <find>CHATBOT_HOSTNAME</find>
+      <find>getConnection</find>
+      <find>connection</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$</dir>
@@ -335,8 +337,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/chat-app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="446">
-          <caret line="46" column="41" selection-start-line="46" selection-start-column="41" selection-end-line="46" selection-end-column="41" />
+        <state relative-caret-position="225">
+          <caret line="1390" selection-start-line="1390" selection-end-line="1390" />
         </state>
       </provider>
     </entry>

@@ -41,25 +41,21 @@ var bodyParser = require('body-parser'),
   app.use(helmet.noCache());
 
  // const nodemailer = require("nodemailer");
- console.log(process.env.CHATBOT_HOSTNAME);
- console.log(process.env.CHATBOT_DB);
- console.log(process.env.CHATBOT_USERNAME);
- console.log(process.env.CHATBOT_PASSWORD);
- console.log(process.env.CHATBOT_DB_PORT);
-  // Database initialization
-  var connection = mysql.createConnection({
-	  host     : process.env.CHATBOT_HOSTNAME,
-	  user     : process.env.CHATBOT_USERNAME,
-	  password : process.env.CHATBOT_PASSWORD,
-	  database : process.env.CHATBOT_DB,
-	  port     : process.env.CHATBOT_DB_PORT
-	});
 
-	connection.connect(function(err) {
-	  console.log(err);
-      if (err) throw err;
-      console.log("Connected!");
-    });
+  // Database initialization
+//  var connection = mysql.createConnection({
+//	  host     : process.env.CHATBOT_HOSTNAME,
+//	  user     : process.env.CHATBOT_USERNAME,
+//	  password : process.env.CHATBOT_PASSWORD,
+//	  database : process.env.CHATBOT_DB,
+//	  port     : process.env.CHATBOT_DB_PORT
+//	});
+//
+//	connection.connect(function(err) {
+//	  console.log(err);
+//      if (err) throw err;
+//      console.log("Connected!");
+//    });
 
 // constants starts here
 
@@ -1392,15 +1388,20 @@ function sendMakeBrandVehicle(id, templateName, previousTemplate, templateText){
 
 
 // create connection object
- function getConnection(){
+function getConnection(){
 
 	var connection = mysql.createConnection({
-	  host     : 'localhost',
-	  user     : 'root',
-	  password : '',
-	  database : 'sphchatdb'
-	});
-	connection.connect();
+          host     : process.env.CHATBOT_HOSTNAME,
+          user     : process.env.CHATBOT_USERNAME,
+          password : process.env.CHATBOT_PASSWORD,
+          database : process.env.CHATBOT_DB,
+          port     : process.env.CHATBOT_DB_PORT
+    });
+	connection.connect(function(err) {
+      console.log(err);
+      if (err) throw err;
+      console.log("Connected!");
+    });
 	return connection;
 }
 
