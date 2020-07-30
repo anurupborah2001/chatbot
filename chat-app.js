@@ -73,7 +73,7 @@ var table = process.env.CHATBOT_DB_TABLE;
 
 // ends constants here
 
-app.listen(3000, () => {
+app.listen(8080, () => {
  console.log("Server running on port 3000");
 });
 
