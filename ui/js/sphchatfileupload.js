@@ -114,9 +114,9 @@ $(function(){
        var uploadFile = function(file, i) {
              var formData = new FormData();
              getRequestObj = makeRequestObject("Upload File");
-             formData.append('uploadFile', file);
              formData.append('data', JSON.stringify(getRequestObj));
              formData.append('uploadFileCounter', i);
+             formData.append('uploadFile', file);
              ajaXRequest(formData,true,function(status){
                   if(status){
                     //$(uploadDiv + ":last").closest("div.jsm-user-wrapper.bot").remove();
