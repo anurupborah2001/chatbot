@@ -89,26 +89,24 @@ app.get("/welcome", cors(), (req, res, next) => {
 //https://www.npmjs.com/package/multer-s3
 //s3 upload
 
-var fileNameToSave = microtime.now();
-var dateFolder = getGenericDate(0);
-var extension = ".";
+var saveFileStorageLocation = "";
+var dateUploaded = getGenericDate(0);
+
 var uploads3 = multer({
     storage: multerS3({
        s3: s3,
        bucket: s3_bucket_name_chatbot_advertiserimage,
        storageClass: 'INTELLIGENT_TIERING',
        key: function (req, file, cb) {
-       	    console.log("req.body: ",req.body);
+        	console.log("uploads3 req.body:: ",req.body);
         	var temp = JSON.parse(JSON.stringify(req.body));
         	var values_json = JSON.parse(temp.data);
-        	console.log("values_json: ",values_json);
-        	var fileStruct = dateFolder + "/" + values_json.id + "/";
-            extension = extension + file.originalname.split(".")[1];
-       	    cb(null, `${fileStruct}${fileNameToSave}${extension}`);
+        	var fileStruct = dateUploaded + "/" + values_json.id + "/";
+            saveFileStorageLocation = microtime.now() +"."+ file.originalname.split(".")[1];
+       	    cb(null, `${fileStruct}${saveFileStorageLocation}`); //use getGenericDate(0) aditionally to save file date wise, for unique file key date in yyyy-mm-dd format.
        }
    })
 });
-
 
 app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next) {
 
@@ -122,9 +120,6 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
    
    var temp = JSON.parse(JSON.stringify(req.body, null, 2));
    var values_json = JSON.parse(temp.data);
-
-   var saveFileStorageLocation = fileNameToSave + extension;
-   var dateUploaded = dateFolder;
 
    //console.log("file", req.file['filename']);
    console.log("file", req.files[0]['originalname']);
