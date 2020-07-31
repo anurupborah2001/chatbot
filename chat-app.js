@@ -98,8 +98,10 @@ var uploads3 = multer({
        bucket: s3_bucket_name_chatbot_advertiserimage,
        storageClass: 'INTELLIGENT_TIERING',
        key: function (req, file, cb) {
+       	    console.log("req.body: ",req.body);
         	var temp = JSON.parse(JSON.stringify(req.body));
         	var values_json = JSON.parse(temp.data);
+        	console.log("values_json: ",values_json);
         	var fileStruct = dateFolder + "/" + values_json.id + "/";
             extension = extension + file.originalname.split(".")[1];
        	    cb(null, `${fileStruct}${fileNameToSave}${extension}`);
@@ -164,7 +166,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 
 	   		if(fileName){
 
-	   			var query = "update '"+table+"' set ad_service_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now() and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set ad_service_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now() and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -176,7 +178,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 
 	   		if(fileName){
 
-	   			var query = "update '"+table+"' set ad_service_qr_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update  "+table+" set ad_service_qr_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -188,7 +190,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 
 	   		if(fileName){
 
-	   			var query = "update '"+table+"' set ad_vehicle_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update  "+table+" set ad_vehicle_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -199,7 +201,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 
 	   		if(fileName){
 
-	   			var query = "update '"+table+"' set ad_service_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update  "+table+" set ad_service_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -211,7 +213,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 	   		
 	   		if(fileName){
 
-	   			var query = "update '"+table+"' set ad_property_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update  "+table+" set ad_property_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -222,12 +224,12 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 
 	   		if(fileName){
 	   			
-	   			var query = "update '"+table+"' set ad_vehicle_qr_code_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' , has_vehicle_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update  "+table+" set ad_vehicle_qr_code_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' , has_vehicle_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}else{
 
-	   			var query = "update '"+table+"' set ad_vehicle_qr_code_name = '' , has_vehicle_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update  "+table+" set ad_vehicle_qr_code_name = '' , has_vehicle_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -237,13 +239,13 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 	   }else if(nextTemplate == "qr-code-property-upload-mlutipart"){
 
 	   		if(fileName){
-	   			var query = "update '"+table+"' set ad_property_qr_code_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' , has_property_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update  "+table+" set ad_property_qr_code_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' , has_property_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   			
 	   		}else{
 
-	   			var query = "update '"+table+"' set ad_property_qr_code_name = ''  , has_property_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set ad_property_qr_code_name = ''  , has_property_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -928,7 +930,10 @@ app.post('/message', cors(), async function (req, res) {
     var signature = crypto.createHmac('sha256', secretKey)
 											.update(data)
 											.digest('base64');
-	console.log("signature:", signature);										
+	console.log("signature:", signature);	
+
+	var query_insert_update = "update "+table+" set transaction_uuid = '"+transaction_uuid+"', reference_number = '"+reference_number+"' , finalSignedDateTime = '"+finalSignedDateTime+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
+	indsertUpdateData(query_insert_update);									
 
 	var html='';
 		//  html +="<!DOCTYPE html><html><body>";
