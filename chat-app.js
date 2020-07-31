@@ -42,21 +42,6 @@ var bodyParser = require('body-parser'),
 
  // const nodemailer = require("nodemailer");
 
-  // Database initialization
-//  var connection = mysql.createConnection({
-//	  host     : process.env.CHATBOT_HOSTNAME,
-//	  user     : process.env.CHATBOT_USERNAME,
-//	  password : process.env.CHATBOT_PASSWORD,
-//	  database : process.env.CHATBOT_DB,
-//	  port     : process.env.CHATBOT_DB_PORT
-//	});
-//
-//	connection.connect(function(err) {
-//	  console.log(err);
-//      if (err) throw err;
-//      console.log("Connected!");
-//    });
-
 // constants starts here
 
 var GST_RATE = process.env.GST_RATE;
@@ -100,37 +85,35 @@ app.get("/welcome", cors(), (req, res, next) => {
 });
 
 
+//Reference https://stackoverflow.com/questions/40494050/uploading-image-to-amazon-s3-using-multer-s3-nodejs
+//https://www.npmjs.com/package/multer-s3
+//s3 upload
 
-//s3 upload starts here
+var fileNameToSave = microtime.now();
+var dateFolder = getGenericDate(0);
+var extension = ".";
 var uploads3 = multer({
     storage: multerS3({
        s3: s3,
-      bucket: s3_bucket_name_chatbot_advertiserimage,
-	  metadata: function (req, file, cb) {
-      cb(null, file.filename); //use getGenericDate(0) aditionally to save file date wise, for unique file key date in yyyy-mm-dd format.
-    },
-    key: function (req, file, cb) {
-      cb(null, Date.now().toString())
-    }
-  })
-})
+       bucket: s3_bucket_name_chatbot_advertiserimage,
+       storageClass: 'INTELLIGENT_TIERING',
+       key: function (req, file, cb) {
+        	var temp = JSON.parse(JSON.stringify(req.body));
+        	var values_json = JSON.parse(temp.data);
+        	var fileStruct = dateFolder + "/" + values_json.id + "/";
+            extension = extension + file.originalname.split(".")[1];
+       	    cb(null, `${fileStruct}${fileNameToSave}${extension}`);
+       }
+   })
+});
 
-//       key: function (req, file, cb) {
- //     cb(null, file.filename) //use getGenericDate(0) aditionally to save file date wise, for unique file key date in yyyy-mm-dd format.
- //   }
-//  })
-//})
 
 app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next) {
-//app.post('/fileupload', uploads3.single('uploadFile'), function (req, res) {
-//s3 upload ends here
 
-// local upload starts here
 //local storage comment next two lines below and uncomment above set of code to enable s3 upload.
 //var upload = multer({ dest: '/Users/sssingh/upload/' })
 //app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
-// local upload ends  here   
-
+   
    // req.file is the name of your file in the form above, here 'uploaded_file'
    // req.body will hold the text fields, if there were any 
    //var data = req.body;
@@ -138,7 +121,11 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
    var temp = JSON.parse(JSON.stringify(req.body, null, 2));
    var values_json = JSON.parse(temp.data);
 
-   console.log("file", req.file['filename']);
+   var saveFileStorageLocation = fileNameToSave + extension;
+   var dateUploaded = dateFolder;
+
+   //console.log("file", req.file['filename']);
+   console.log("file", req.files[0]['originalname']);
 
    var id = values_json.id;
    console.log("contact number as id :" , id);
@@ -149,7 +136,8 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
    var nextTemplate = values_json.nextTemplate;
    console.log("nextTemplate received:" , nextTemplate);
 
-   var fileName = req.file['filename'];
+   //var fileName = req.file['filename'];
+   var fileName = req.files[0]['originalname'];
    
    var messageData; 
 
@@ -176,7 +164,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 
 	   		if(fileName){
 
-	   			var query = "update "+table+" set ad_service_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now() and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update '"+table+"' set ad_service_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now() and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -188,19 +176,19 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 
 	   		if(fileName){
 
-	   			var query = "update "+table+" set ad_service_qr_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update '"+table+"' set ad_service_qr_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
 	   		
-			 messageData = sendNoQrCode(id, "no-qr-code-services" , "qr-code-services", "<strong>Well done. QR code received.<br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable.");
+			 messageData = sendNoQrCode(id, "no-qr-code-services" , "qr-code-services", "<strong>Well done. QR code received.</strong><br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable.");
 
 	   }
 	   if(nextTemplate == "has-qr-code-vehicle"){
 
 	   		if(fileName){
 
-	   			var query = "update "+table+" set ad_vehicle_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update '"+table+"' set ad_vehicle_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -211,7 +199,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 
 	   		if(fileName){
 
-	   			var query = "update "+table+" set ad_service_image_name = '"+fileName+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update '"+table+"' set ad_service_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -223,7 +211,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 	   		
 	   		if(fileName){
 
-	   			var query = "update "+table+" set ad_property_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update '"+table+"' set ad_property_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
@@ -234,33 +222,33 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 
 	   		if(fileName){
 	   			
-	   			var query = "update "+table+" set ad_vehicle_qr_code_name = '"+fileName+"' , has_vehicle_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update '"+table+"' set ad_vehicle_qr_code_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' , has_vehicle_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}else{
 
-	   			var query = "update "+table+" set ad_vehicle_qr_code_name = '' , has_vehicle_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update '"+table+"' set ad_vehicle_qr_code_name = '' , has_vehicle_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
 
-		    messageData = sendNoQrCode(id,"no-qr-code-vehicle", "has-qr-code-vehicle", "<strong>Well done. QR code received.<br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); ;
+		    messageData = sendNoQrCode(id,"no-qr-code-vehicle", "has-qr-code-vehicle", "<strong>Well done. QR code received.</strong><br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); ;
 
 	   }else if(nextTemplate == "qr-code-property-upload-mlutipart"){
 
 	   		if(fileName){
-	   			var query = "update "+table+" set ad_property_qr_code_name = '"+fileName+"'  , has_property_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update '"+table+"' set ad_property_qr_code_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' , has_property_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   			
 	   		}else{
 
-	   			var query = "update "+table+" set ad_property_qr_code_name = ''  , has_property_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update '"+table+"' set ad_property_qr_code_name = ''  , has_property_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
 	   		}
 
-		    messageData = sendNoQrCode(id,"no-qr-code-property", "has-qr-code-property", "<strong>Well done. QR code received.<br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
+		    messageData = sendNoQrCode(id,"no-qr-code-property", "has-qr-code-property", "<strong>Well done. QR code received.</strong><br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
 
 	   }
 	   }catch(e) {

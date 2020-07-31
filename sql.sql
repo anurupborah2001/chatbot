@@ -30,6 +30,7 @@ CREATE TABLE `sph_chatbot` (
  `totat_paid` varchar(100) DEFAULT NULL,
  `property_bedrooms` varchar(100) DEFAULT NULL,
  `vehicle_reg_date` varchar(100) DEFAULT NULL,
+`date_uploaded` varchar(100) DEFAULT NULL,
  `is_payment_success` tinyint(1) DEFAULT 0,
  `business_lead_informed_time` tinyint(1) DEFAULT 0,
  `has_property_qr_code` tinyint(1) DEFAULT 0,
