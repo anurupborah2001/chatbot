@@ -570,11 +570,11 @@ app.post('/message', cors(), async function (req, res) {
 
 		if(choosen_language == "Lianhe ZaoBao"){
 
-			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
+			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
 
 		}else if(choosen_language == "The Straits Times"){
 
-			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
+			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
 
 		}
 
@@ -659,11 +659,11 @@ app.post('/message', cors(), async function (req, res) {
 
 		if(choosen_language == "Lianhe ZaoBao"){
 
-			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
+			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
 
 		}else if(choosen_language == "The Straits Times"){
 
-			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
+			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
 
 		}
 
@@ -690,11 +690,11 @@ app.post('/message', cors(), async function (req, res) {
 
 		if(choosen_language == "Lianhe ZaoBao"){
 
-			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise otherwise you can click on <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='10%' height='10%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
+			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise otherwise you can click on <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='10%' height='10%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
 
 		}else if(choosen_language == "The Straits Times"){
 
-			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
+			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
 
 		}
 
@@ -720,7 +720,7 @@ app.post('/message', cors(), async function (req, res) {
 	  		indsertUpdateData(query_insert_update);
 		}
 
-		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  order by create_timestamp  DESC LIMIT 1";
+		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
 		var result = await fetchData(query); 
 		var first_name = result.first_name;
 		var last_name = result.last_name;
@@ -772,7 +772,7 @@ app.post('/message', cors(), async function (req, res) {
 	  		indsertUpdateData(query_insert_update);
 		}
 
-		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() and is_active = false order by create_timestamp  DESC LIMIT 1";
+		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() and is_active = true order by create_timestamp  DESC LIMIT 1";
 		var result = await fetchData(query); 
 		var first_name = result.first_name;
 		var last_name = result.last_name;
@@ -824,7 +824,7 @@ app.post('/message', cors(), async function (req, res) {
 	  		indsertUpdateData(query_insert_update);
 	  	}
 
-  		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by create_timestamp  DESC LIMIT 1";
+  		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by and is_active = true create_timestamp  DESC LIMIT 1";
 		var result = await fetchData(query); 
 		var first_name = result.first_name;
 		var last_name = result.last_name;
