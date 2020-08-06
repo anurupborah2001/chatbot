@@ -1394,8 +1394,10 @@ function getConnection(){
           port     : process.env.CHATBOT_DB_PORT
     });
 	connection.connect(function(err) {
-      console.log(err);
-      if (err) throw err;
+      if (err){
+      	console.log('error when connecting to db:', err);
+      	setTimeout(getConnection, 2000); 
+      }
       console.log("Connected!");
     });
 	return connection;
@@ -1407,12 +1409,9 @@ function getConnection(){
  			console.log("query_str::::", query_str);
 			var aPromise =  new Promise(function(resolve, reject) { 
 			var connection = getConnection();
-			console.log("fetchData connection:: ", connection);
   			connection.query(query_str, function (error, results, fields) {
 
 		    console.log('The fetchData solution before is: ', results);
-
-		    connection.end();
 			 if (error) {
 			 	console.log("ERROR::::", error);
                 reject(error);
@@ -1420,14 +1419,13 @@ function getConnection(){
             	console.log("results[0]", results[0]);
                 resolve(results[0]);
             }
-		   
+		   connection.end();
 		});
 
 	 }).then((response) => {
 	 	console.log("response", response)
 		return response;
 	});
-
 	var return_result = await aPromise;
 	console.log("return_result", return_result);
 	return JSON.parse(JSON.stringify(return_result));
@@ -1440,8 +1438,6 @@ function getConnection(){
 function indsertUpdateData(query){
 	
 	var connection = getConnection();
-	var connection = getConnection();
-			console.log("indsertUpdateData connection:: ", connection);
 	connection.query(query, function (error, results, fields) {
 		  if (error) throw error;
 		  console.log('The indsertUpdateData solution is: ', results);
