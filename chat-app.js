@@ -565,20 +565,21 @@ app.post('/message', cors(), async function (req, res) {
   		var query = "select publication from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		var pub = await fetchData(query);
 		var choosen_language =  pub.publication;
-
+		var maxTextLength = 0;
 		var text_language_specific = "";
 
 		if(choosen_language == "Lianhe ZaoBao"){
 
 			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
+			maxTextLength = 40;
 
 		}else if(choosen_language == "The Straits Times"){
 
 			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
-
+			maxTextLength = 65;
 		}
 
-  		messageData = sendAdText(id, "paynow-service" , "qr-code-services-upload-mlutipart", "Okay, <strong>"+ message +". 👍 </strong><br/>" + text_language_specific ); 
+  		messageData = sendAdText(id, "paynow-service" , "qr-code-services-upload-mlutipart", "Okay, <strong>"+ message +". 👍 </strong><br/>" + text_language_specific , maxTextLength); 
 
   		
   	}else if(nextTemplate == "no-qr-code-property"){
@@ -642,7 +643,7 @@ app.post('/message', cors(), async function (req, res) {
   			var query = "update "+table+" set vehicle_reg_date = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
-	  		messageData = sendVehicleMileage(id, "text-to-advertise-vehicle" , "no-qr-code-vehicle", "Noted. It's <strong>"+ message +"</strong>. <br/>Please share the mileage. <br/>Example: $ 9800 / yr "); 
+	  		messageData = sendVehicleMileage(id, "text-to-advertise-vehicle" , "no-qr-code-vehicle", "Noted. It's <strong>"+ message +"</strong>. <br/>Please share the mileage. "); 
 	   			
 	   	}else{
 
@@ -654,17 +655,17 @@ app.post('/message', cors(), async function (req, res) {
 		var query = "select publication from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"' order by create_timestamp  DESC LIMIT 1";
 		var pub = await fetchData(query);
 		var choosen_language =  pub.publication;
-
+		var maxTextLength = 0;
 		var text_language_specific = "";
 
 		if(choosen_language == "Lianhe ZaoBao"){
 
 			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
-
+			maxTextLength = 40;
 		}else if(choosen_language == "The Straits Times"){
 
 			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
-
+			maxTextLength =67;
 		}
 
   		if(message){
@@ -673,10 +674,10 @@ app.post('/message', cors(), async function (req, res) {
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
 
-	  		messageData = sendAdText(id, "paynow-property" , "property-bedrooms-number", "Okay. It's <br/><strong>"+ message +"</strong>.<br/>" +text_language_specific); 
+	  		messageData = sendAdText(id, "paynow-property" , "property-bedrooms-number", "Okay. It's <br/><strong>"+ message +"</strong>.<br/>" +text_language_specific, maxTextLength); 
 	    }else{
 
-	    	messageData = sendAdText(id, "paynow-property" , "property-bedrooms-number", "Okay.<br/>"+text_language_specific); 
+	    	messageData = sendAdText(id, "paynow-property" , "property-bedrooms-number", "Okay.<br/>"+text_language_specific, maxTextLength); 
 	    }
 
   		
@@ -685,17 +686,17 @@ app.post('/message', cors(), async function (req, res) {
   		var query = "select publication from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		var pub = await fetchData(query);
 		var choosen_language =  pub.publication;
-
+		var maxTextLength = 0;
 		var text_language_specific = "";
 
 		if(choosen_language == "Lianhe ZaoBao"){
 
 			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise otherwise you can click on <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='10%' height='10%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
-
+			maxTextLength = 40;
 		}else if(choosen_language == "The Straits Times"){
 
 			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
-
+			maxTextLength = 67;
 		}
 
   		if(message){
@@ -704,11 +705,11 @@ app.post('/message', cors(), async function (req, res) {
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
 
-		  		messageData = sendAdText(id, "paynow-vehicle" , "vehicle-registration-date", "Okay. It's <br/><strong>"+ message +"</strong>.<br/>"+text_language_specific);
+		  		messageData = sendAdText(id, "paynow-vehicle" , "vehicle-registration-date", "Okay. It's <br/><strong>"+ message +"</strong>.<br/>"+text_language_specific, maxTextLength);
 		  		
 	   	}else{
 
-	   		messageData = sendAdText(id, "paynow-vehicle" , "vehicle-registration-date", "Okay.<br/>"+text_language_specific);
+	   		messageData = sendAdText(id, "paynow-vehicle" , "vehicle-registration-date", "Okay.<br/>"+text_language_specific, maxTextLength);
 	   	}
 
   }else if(nextTemplate == "paynow-service"){
@@ -1099,7 +1100,7 @@ function orderInformation(id, templateName, previousTemplate , unitcost , adtype
 
 // send advertisement text
 
-function sendAdText(id, templateName, previousTemplate, templateText){
+function sendAdText(id, templateName, previousTemplate, templateText, maxTextLength){
 
 	 var uniqueTemplateId = getTemplateId();
 
@@ -1116,8 +1117,8 @@ function sendAdText(id, templateName, previousTemplate, templateText){
 		        "templateName" : "sendmessage",
 		        "textOption" : {
 		              "enableText": true,
-		              "maxTextLength": 15,
-		              "autoComplete": "on",
+		              "maxTextLength": maxTextLength,
+		              "autoComplete": "off",
 		              "autoOptions": ["Alabama","Alaska","Arizona","Arkansas","Arkansas2","Barkansas"]
 		         },
 
@@ -1184,7 +1185,7 @@ function sendVehicleMileage(id, templateName, previousTemplate, templateText){
 		        "textOption" : {
 		              "enableText": true,
 		              "maxTextLength": 15,
-		              "autoComplete": "on",
+		              "autoComplete": "off",
 		              "autoOptions": [" $ 8900 / yr "," $ 6200 / yr "," $ 800 / yr "," $ 6700 / yr "," $ 9800 / yr "," $ 5000 / yr "]
 		         },
 
