@@ -249,7 +249,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 
 	   }
 	   }catch(e) {
-        console.log(e);
+        console.error("ERROR occured 2:", e);
         messageData = sendError("Error occured due to inactive session.Please start from beginning");
     }
     if(!messageData){
@@ -983,7 +983,7 @@ app.post('/message', cors(), async function (req, res) {
   }
 
 	}catch(e) {
-        console.log(e);
+       console.error("ERROR occured 1 :", e);
        messageData = sendError("Error occured due to inactive session.Please start from beginning");
     }	
 
@@ -1395,8 +1395,8 @@ function getConnection(){
     });
 	connection.connect(function(err) {
       if (err){
-      	console.log('error when connecting to db:', err);
-      	setTimeout(getConnection, 2000); 
+      	console.error('error when connecting to db:', err);
+      	setTimeout(getConnection, 10000); 
       }
       console.log("Connected!");
     });
@@ -1412,20 +1412,24 @@ function getConnection(){
   			connection.query(query_str, function (error, results, fields) {
 
 		    console.log('The fetchData solution before is: ', results);
+
 			 if (error) {
-			 	console.log("ERROR::::", error);
+			 	console.error("fetchData ERROR 1 ::::", error);
                 reject(error);
             } else {
             	console.log("results[0]", results[0]);
                 resolve(results[0]);
             }
-		   connection.end();
+		   connection.end(function(err) { if (err) { return console.error('ERROR connection end fetchData:' + err.message); } console.log('Close the database connection.'); });
 		});
 
 	 }).then((response) => {
 	 	console.log("response", response)
 		return response;
+	}).catch((err) => {
+		console.error("fetchData ERROR 2:::", err)
 	});
+
 	var return_result = await aPromise;
 	console.log("return_result", return_result);
 	return JSON.parse(JSON.stringify(return_result));
@@ -1439,10 +1443,13 @@ function indsertUpdateData(query){
 	
 	var connection = getConnection();
 	connection.query(query, function (error, results, fields) {
-		  if (error) throw error;
+		  	f (error) {
+		 		console.error("indsertUpdateData ERROR::::", error);
+				throw error;
+            }
 		  console.log('The indsertUpdateData solution is: ', results);
 	});
-	connection.end();
+	connection.end(function(err) { if (err) { return console.error('ERROR connection end indsertUpdateData:' + err.message); } console.log('Close the database connection.'); });
 }
 
 //ask for upload image
