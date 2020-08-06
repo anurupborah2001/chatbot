@@ -1406,7 +1406,7 @@ function getConnection(){
 
  async function fetchData(query_str){
 
-
+ 			console.log("query_str::::", query_str);
 			var aPromise =  new Promise(function(resolve, reject) { 
 			var connection = getConnection();
   			connection.query(query_str, function (error, results, fields) {
@@ -1415,7 +1415,8 @@ function getConnection(){
 
 		    connection.end();
 			 if (error) {
-                reject(err);
+			 	console.log("ERROR::::", error);
+                reject(error);
             } else {
             	console.log("results[0]", results[0]);
                 resolve(results[0]);
