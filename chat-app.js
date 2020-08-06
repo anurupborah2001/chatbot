@@ -1443,7 +1443,7 @@ function indsertUpdateData(query){
 	
 	var connection = getConnection();
 	connection.query(query, function (error, results, fields) {
-		  	f (error) {
+		  	if(error) {
 		 		console.error("indsertUpdateData ERROR::::", error);
 				throw error;
             }
