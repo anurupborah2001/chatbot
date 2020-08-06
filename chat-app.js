@@ -1407,6 +1407,7 @@ function getConnection(){
  			console.log("query_str::::", query_str);
 			var aPromise =  new Promise(function(resolve, reject) { 
 			var connection = getConnection();
+			console.log("fetchData connection:: ", connection);
   			connection.query(query_str, function (error, results, fields) {
 
 		    console.log('The fetchData solution before is: ', results);
@@ -1439,6 +1440,8 @@ function getConnection(){
 function indsertUpdateData(query){
 	
 	var connection = getConnection();
+	var connection = getConnection();
+			console.log("indsertUpdateData connection:: ", connection);
 	connection.query(query, function (error, results, fields) {
 		  if (error) throw error;
 		  console.log('The indsertUpdateData solution is: ', results);
