@@ -1411,7 +1411,7 @@ function getConnection(){
 
 		    console.log('The fetchData solution before is: ', results);
 
-		    //connection.end();
+		    connection.end();
 			 if (error) {
 			 	console.log("ERROR::::", error);
                 reject(error);
@@ -1429,7 +1429,6 @@ function getConnection(){
 
 	var return_result = await aPromise;
 	console.log("return_result", return_result);
-	connection.end();
 	return JSON.parse(JSON.stringify(return_result));
 
 }
