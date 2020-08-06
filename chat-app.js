@@ -1386,8 +1386,6 @@ function sendMakeBrandVehicle(id, templateName, previousTemplate, templateText){
 
 // create connection object
 function getConnection(){
-    console.log("Port : " + process.env.CHATBOT_DB_PORT);
-    console.log("DB : " + process.env.CHATBOT_DB);
 	var connection = mysql.createConnection({
           host     : process.env.CHATBOT_HOSTNAME,
           user     : process.env.CHATBOT_USERNAME,
@@ -1413,7 +1411,7 @@ function getConnection(){
 
 		    console.log('The fetchData solution before is: ', results);
 
-		    connection.end();
+		    //connection.end();
 			 if (error) {
 			 	console.log("ERROR::::", error);
                 reject(error);
@@ -1429,8 +1427,9 @@ function getConnection(){
 		return response;
 	});
 
-	 var return_result = await aPromise;
+	var return_result = await aPromise;
 	console.log("return_result", return_result);
+	connection.end();
 	return JSON.parse(JSON.stringify(return_result));
 
 }
