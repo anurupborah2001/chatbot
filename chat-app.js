@@ -1421,9 +1421,9 @@ function getConnection(){
             	console.log("results[0]", results[0]);
                 resolve(results[0]);
             }
+            connection.end(function(err) { if (err) { return console.error('ERROR connection end fetchData:' + err.message); } console.log('Close the database connection.'); });
 		});
-  		connection.end(function(err) { if (err) { return console.error('ERROR connection end fetchData:' + err.message); } console.log('Close the database connection.'); });
-
+  		
 	 }).then((response) => {
 	 	console.log("response", response)
 		return response;
