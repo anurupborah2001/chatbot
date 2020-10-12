@@ -1407,10 +1407,10 @@ function getConnection(){
  async function fetchData(query_str){
 
  			console.log("query_str::::", query_str);
+ 			var connection = getConnection();
 			var aPromise =  new Promise(function(resolve, reject) { 
-			var connection = getConnection();
   			//connection.query(query_str, function (error, results, fields) {
-  			connection.query({sql: query_str, timeout: 5000}, function (error, results, fields) {
+  			connection.query({sql: query_str, timeout: 10000}, function (error, results, fields) {
 
 		    console.log('The fetchData solution before is: ', results);
 
@@ -1421,7 +1421,6 @@ function getConnection(){
             	console.log("results[0]", results[0]);
                 resolve(results[0]);
             }
-            connection.end(function(err) { if (err) { return console.error('ERROR connection end fetchData:' + err.message); } console.log('Close the database connection.'); });
 		});
   		
 	 }).then((response) => {
@@ -1430,6 +1429,8 @@ function getConnection(){
 	}).catch((err) => {
 		console.error("fetchData ERROR 2:::", err)
 	});
+
+	connection.end(function(err) { if (err) { return console.error('ERROR connection end fetchData:' + err.message); } console.log('Close the database connection, fetchData'); });
 
 	var return_result = await aPromise;
 	console.log("return_result", return_result);
@@ -1451,7 +1452,7 @@ function indsertUpdateData(query){
             }
 		  console.log('The indsertUpdateData solution is: ', results);
 	});
-	connection.end(function(err) { if (err) { return console.error('ERROR connection end indsertUpdateData:' + err.message); } console.log('Close the database connection.'); });
+	connection.end(function(err) { if (err) { return console.error('ERROR connection end indsertUpdateData:' + err.message); } console.log('Close the database connection, indsertUpdateData.'); });
 }
 
 //ask for upload image
