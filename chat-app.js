@@ -1410,7 +1410,7 @@ function getConnection(){
 			var aPromise =  new Promise(function(resolve, reject) { 
 			var connection = getConnection();
   			//connection.query(query_str, function (error, results, fields) {
-  			connection.query({sql: query_str, timeout: 60000}, function (error, results, fields) {
+  			connection.query({sql: query_str, timeout: 10000}, function (error, results, fields) {
 
 		    console.log('The fetchData solution before is: ', results);
 
@@ -1444,7 +1444,7 @@ function indsertUpdateData(query){
 	
 	var connection = getConnection();
 	//connection.query(query, function (error, results, fields) {
-	connection.query({sql: query, timeout: 60000}, function (error, results, fields) {
+	connection.query({sql: query, timeout: 10000}, function (error, results, fields) {
 		  	if(error) {
 		 		console.error("indsertUpdateData ERROR::::", error);
 				throw error;
