@@ -1413,6 +1413,7 @@ function getConnection(){
   			connection.query({sql: query_str, timeout: 10000}, function (error, results, fields) {
 
 		    console.log('The fetchData solution before is: ', results);
+		    console.error("The fetchData solution before ERROR ::::", error);
 
 			 if (error) {
 			 	console.error("fetchData ERROR 1 ::::", error);
