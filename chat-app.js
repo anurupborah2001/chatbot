@@ -1403,6 +1403,8 @@ function getConnection(){
 	return connection;
 }
 
+var count_fetch_control = 0;
+var max_count_fetch_control = 10;
 
  async function fetchData(query_str){
 
@@ -1435,8 +1437,14 @@ function getConnection(){
 
 	var return_result = await aPromise;
 	console.log("return_result", return_result);
-	return JSON.parse(JSON.stringify(return_result));
 
+	if (typeof return_result === 'undefined' || return_result === null || return_result === ''){
+		if(count_fetch_control == max_count_fetch_control){
+			count_fetch_control++;
+		}
+   		fetchData(query_str);
+	}
+	return JSON.parse(JSON.stringify(return_result));
 }
 
 
