@@ -1,6 +1,6 @@
 'use strict';
 
-var SERVER_URL = 'https://7ccf727d.ngrok.io/';
+var SERVER_URL = 'http://d315xfu76uv2z9.cloudfront.net/';
 
 var bodyParser = require('body-parser'),
   express = require('express'),
@@ -1396,7 +1396,7 @@ function getConnection(){
 	connection.connect(function(err) {
       if (err){
       	console.error('error when connecting to db:', err);
-      	setTimeout(getConnection, 1000); 
+      	setTimeout(getConnection, 3000); 
       }
       console.log("Connected!");
     });
@@ -1410,7 +1410,7 @@ function getConnection(){
 			var aPromise =  new Promise(function(resolve, reject) { 
 			var connection = getConnection();
   			//connection.query(query_str, function (error, results, fields) {
-  			connection.query({sql: query_str, timeout: 1000}, function (error, results, fields) {
+  			connection.query({sql: query_str, timeout: 3000}, function (error, results, fields) {
 
 		    console.log('The fetchData solution before is: ', results);
 
@@ -1444,7 +1444,7 @@ function indsertUpdateData(query){
 	
 	var connection = getConnection();
 	//connection.query(query, function (error, results, fields) {
-	connection.query({sql: query, timeout: 1000}, function (error, results, fields) {
+	connection.query({sql: query, timeout: 3000}, function (error, results, fields) {
 		  	if(error) {
 		 		console.error("indsertUpdateData ERROR::::", error);
 				throw error;
