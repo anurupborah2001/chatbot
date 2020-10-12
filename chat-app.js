@@ -1421,8 +1421,6 @@ function getConnection(){
             	console.log("results[0]", results[0]);
                 resolve(results[0]);
             }
-		   // Added below callback to let thread wait for the execution.
-		   return callback(results);
 		});
   		connection.end(function(err) { if (err) { return console.error('ERROR connection end fetchData:' + err.message); } console.log('Close the database connection.'); });
 
@@ -1452,8 +1450,6 @@ function indsertUpdateData(query){
 				throw error;
             }
 		  console.log('The indsertUpdateData solution is: ', results);
-		  // Added below callback to let thread wait for the execution.
-		   return callback(results);
 	});
 	connection.end(function(err) { if (err) { return console.error('ERROR connection end indsertUpdateData:' + err.message); } console.log('Close the database connection.'); });
 }
