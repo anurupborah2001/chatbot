@@ -1442,6 +1442,9 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+var counter_retry_undefined = 0;
+var counter_max_retry_undefined = 3;
+
  async function fetchData(query_str){
 
  			console.log("query_str::::", query_str);
@@ -1451,7 +1454,8 @@ function sleep(ms) {
   			//connection.query(query_str, function (error, results, fields) {
   			connection.query({sql: query_str, timeout: 5000}, function (error, results, fields) {
   			console.log('The fetchData solution before is: ', results);
-
+  			console.log('The fetchData solution before error: ', error);
+  			
 			 if (error) {
 			 	console.error("fetchData ERROR 1 ::::", error);
                 reject(error);
@@ -1471,6 +1475,13 @@ function sleep(ms) {
 	connection.end(function(err) { if (err) { return console.error('ERROR connection end fetchData:' + err.message); } console.log('Close the database connection, fetchData'); });
 
 	var return_result = await aPromise;
+	if(return_result === 'undefined'){
+		if(counter_retry_undefined == counter_max_retry_undefined){
+			console.log("counter_retry_undefined", return_result)
+			counter_retry_undefined++;
+			fetchData(query_str);
+		}		
+	}
 	console.log("return_result", return_result);
 	return JSON.parse(JSON.stringify(return_result));
 }
