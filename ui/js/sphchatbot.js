@@ -485,8 +485,8 @@ $(function(){
         $(chatElement.chatWelcomeWindow).show();
         $(chatElement.chatWindow).hide(500);
         resetRequestTemplate();
+        inputAutoComplete.destroy(chatElement.inputChat);
         chatbot.sphChatbot('reset');
-
      });
 
      //On pay Now Clicked
