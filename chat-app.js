@@ -1,6 +1,6 @@
 'use strict';
 
-var SERVER_URL = 'https://7ccf727d.ngrok.io/';
+var SERVER_URL = 'http://d315xfu76uv2z9.cloudfront.net/';
 
 var bodyParser = require('body-parser'),
   express = require('express'),
@@ -39,6 +39,11 @@ var bodyParser = require('body-parser'),
   app.use(helmet.ieNoOpen()); 
   app.use(helmet.noSniff()); 
   app.use(helmet.noCache());
+
+  app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
 
  // const nodemailer = require("nodemailer");
 
@@ -164,6 +169,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 	   			var query = "update "+table+" set ad_service_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now() and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   		}
 	   		
 		    messageData = sendHasQrCode(id, "qr-code-services" , "nature-services", "Great, Service picture received.🖇 <br/>Do you also have the QR Code ?");
@@ -176,6 +182,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 	   			var query = "update  "+table+" set ad_service_qr_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   		}
 	   		
 			 messageData = sendNoQrCode(id, "no-qr-code-services" , "qr-code-services", "<strong>Well done. QR code received.</strong><br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable.");
@@ -188,6 +195,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 	   			var query = "update  "+table+" set ad_vehicle_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   		}
 	   		
 		    messageData = sendHasQrCode(id, "qr-code-vehicle" , "upload-vehicle-image", "Great Vehicle picture received.🖇 <br/>Do you also have the QR Code ?");
@@ -199,6 +207,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 	   			var query = "update  "+table+" set ad_service_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   		}
 	   		
 		    messageData = sendHasQrCode(id, "qr-code-services" , "has-upload-service-image", "Great Service picture received.🖇 <br/>Do you also have the QR Code ?");
@@ -211,6 +220,7 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 	   			var query = "update  "+table+" set ad_property_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   		}
 
 		    messageData = sendHasQrCode(id, "qr-code-property" , "upload-property-image", "Great Property picture received.🖇 <br/>Do you also have the QR Code ?");
@@ -222,11 +232,13 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 	   			var query = "update  "+table+" set ad_vehicle_qr_code_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' , has_vehicle_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   		}else{
 
 	   			var query = "update  "+table+" set ad_vehicle_qr_code_name = '' , has_vehicle_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   		}
 
 		    messageData = sendNoQrCode(id,"no-qr-code-vehicle", "has-qr-code-vehicle", "<strong>Well done. QR code received.</strong><br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); ;
@@ -237,12 +249,14 @@ app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next
 	   			var query = "update  "+table+" set ad_property_qr_code_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' , has_property_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   			
 	   		}else{
 
 	   			var query = "update "+table+" set ad_property_qr_code_name = ''  , has_property_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   		}
 
 		    messageData = sendNoQrCode(id,"no-qr-code-property", "has-qr-code-property", "<strong>Well done. QR code received.</strong><br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
@@ -279,7 +293,8 @@ app.post('/message', cors(), async function (req, res) {
   var id = data.id;
   console.log("contact number as id :" , id);
 
-  var message = data.textMessage;
+  //var message = data.textMessage;
+  var message = mysql_real_escape_string(data.textMessage);
   console.log("message received:" , message);
 
   var nextTemplate = data.nextTemplate;
@@ -326,6 +341,7 @@ app.post('/message', cors(), async function (req, res) {
 			var query = "insert into "+table+" (first_name, last_name, phone_number, email, create_timestamp, token, validity, bill_to_address_line1, bill_to_address_city, bill_to_address_state, bill_to_address_postal_code, bill_to_country) values ('"+firstName+"','"+lastName+"','"+id+"','"+email+"','"+create_timestamp+"', '"+hash_token+"', now() + INTERVAL '"+session_ttl_minutes+"' MINUTE, '"+bill_to_address_line1+"', '"+bill_to_address_city+"', '"+bill_to_address_state+"', '"+bill_to_address_postal_code+"', 'SG')";
 			console.log("query: ", query);
 			indsertUpdateData(query);
+			
 		}
 		
   		messageData = sendSample(id, "publication" , "", "What's the nature of your advertisement? <br/>Click on the ad type that you'd like me to walk you through👇 <br/>These are our advertisement sample."); 
@@ -338,6 +354,7 @@ app.post('/message', cors(), async function (req, res) {
 	  		var query = "update "+table+" set ad_type = '"+message+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
+
 	  		messageData = sendPublication(id, "adType" , "sample","<strong>"+message +"</strong>, Noting it down, thanks for your selection 😇 <br/>Next, let's select which publication you'd like the ad to appear in."); 
 	   	
 	   	}else{
@@ -353,6 +370,7 @@ app.post('/message', cors(), async function (req, res) {
 	  		var query = "update "+table+" set publication = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
+	  		
 	  		messageData = sendAvailableDates(id, "availableDate" , "publication" ,"<strong>"+message +"</strong> it is! <br/>As a quick note, there is a cut off time of 2 pm the next day for "+message+" 😊 <br/>Please select the available START and END date of publication 🗓"); 
 	  	
 	 	}else{
@@ -370,6 +388,7 @@ app.post('/message', cors(), async function (req, res) {
 		  		var query = "update "+table+" set start_date = '"+from_to_date_range[0]+"', end_date = '"+from_to_date_range[1]+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
+		  		
 		  		messageData = sendSaleRentService(id, "sale-rent-service" , "adType","Okay, <strong>"+ message +"</strong>. Advertisement is for Sale ,Rent or Services ?"); 
 
 	   		}else{
@@ -395,7 +414,7 @@ app.post('/message', cors(), async function (req, res) {
 				   	var query_insert_update = "update "+table+" set ad_nature = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			  		console.log("query: ", query_insert_update);
 			  		indsertUpdateData(query_insert_update);
-
+			  		
 
 		  		if(ad_type.trim() == VEHICLE){
 
@@ -476,6 +495,7 @@ app.post('/message', cors(), async function (req, res) {
   			var query = "update "+table+" set service_nature = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
+	  		
 
 	  		messageData = sendUploadAdImage(id, "has-upload-service-image" , "sale-rent-service", "Noted, <strong>"+ message +". 👍 </strong><br/>Please upload your advertisement image.");  
 	   			
@@ -493,6 +513,7 @@ app.post('/message', cors(), async function (req, res) {
   			var query = "update "+table+" set vehicle_brand = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
+	  		
 
 	  		messageData = sendUploadAdImage(id, "has-qr-code-vehicle" , "sale-rent-service", "Noted, <strong>"+ message +". 👍 </strong><br/>Please upload your vehicle image.");  
 	   			
@@ -510,6 +531,7 @@ app.post('/message', cors(), async function (req, res) {
 	   			var query = "update "+table+" set property_type = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
+		  		
 
 		  		messageData = sendUploadAdImage(id, "has-qr-code-property" , "sale-rent-service", "Noted, <strong>"+ message +". 👍</strong> <br/>Please upload your property image.");  		
 	   	}else{
@@ -560,6 +582,7 @@ app.post('/message', cors(), async function (req, res) {
   			var query = "update "+table+" set service_charge = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
+	  		
 
   		}
   		var query = "select publication from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
@@ -590,6 +613,7 @@ app.post('/message', cors(), async function (req, res) {
   				var query = "update "+table+" set property_price = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
+		  		
 
 		  		messageData = sendBedRoomsInproperty(id, "property-bedrooms-number" , "qr-code-property-upload-mlutipart", "Okay,<strong> "+ message +". 👍 </strong><br/>How many bedrooms are there in the property? <br/>Example: 1, 2, 3, 4, 5 <br/>NOTE: Only numbers are accepted."); 
 
@@ -609,6 +633,7 @@ app.post('/message', cors(), async function (req, res) {
 	   			var query = "update "+table+" set vehicle_price = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
+		  		
 
 		  		messageData = sendVehicleRegistrationDate(id, "vehicle-registration-date" , "qr-code-vehicle-upload-mlutipart", "Okay, <strong>"+ message +". 👍</strong> <br/>What is the Registration date ? 🗓");
 	   	}else{
@@ -627,6 +652,7 @@ app.post('/message', cors(), async function (req, res) {
 	   			var query = "update "+table+" set property_bedrooms = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
+		  		
 
 		  		messageData = sendPropertySize(id, "text-to-advertise-property" , "no-qr-code-property", "Noted. <strong>"+message+" </strong>bedrooms. <br/>What is property size in sqft. <br/>Example: 3000, 3200, 4000 NOTE: Only numbers are accepted. ");	
 	   	}else{
@@ -643,11 +669,12 @@ app.post('/message', cors(), async function (req, res) {
   			var query = "update "+table+" set vehicle_reg_date = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
+	  		
 	  		messageData = sendVehicleMileage(id, "text-to-advertise-vehicle" , "no-qr-code-vehicle", "Noted. It's <strong>"+ message +"</strong>. <br/>Please share the mileage. "); 
 	   			
 	   	}else{
 
-	   		messageData = sendVehicleMileage(id, "text-to-advertise-vehicle" , "no-qr-code-vehicle", "Noted. <br/>Please share the mileage. <br/>Example: $ 9800 / yr "); 
+	   		messageData = sendVehicleMileage(id, "text-to-advertise-vehicle" , "no-qr-code-vehicle", "Noted. <br/>Please share the mileage."); 
 	   	}
 
   	}else if(nextTemplate == "text-to-advertise-property"){
@@ -673,6 +700,7 @@ app.post('/message', cors(), async function (req, res) {
   			var query = "update "+table+" set property_area = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
+	  		
 
 	  		messageData = sendAdText(id, "paynow-property" , "property-bedrooms-number", "Okay. It's <br/><strong>"+ message +"</strong>.<br/>" +text_language_specific, maxTextLength); 
 	    }else{
@@ -704,6 +732,7 @@ app.post('/message', cors(), async function (req, res) {
 	   			var query = "update "+table+" set vehicle_mileage = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
+		  		
 
 		  		messageData = sendAdText(id, "paynow-vehicle" , "vehicle-registration-date", "Okay. It's <br/><strong>"+ message +"</strong>.<br/>"+text_language_specific, maxTextLength);
 		  		
@@ -719,6 +748,7 @@ app.post('/message', cors(), async function (req, res) {
 	  		var query_insert_update = "update "+table+" set advertisement_text = '"+message+"', is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query_insert_update);
 	  		indsertUpdateData(query_insert_update);
+	  		
 		}
 
 		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
@@ -761,6 +791,7 @@ app.post('/message', cors(), async function (req, res) {
 		
 		var query_insert_update2 = "update "+table+" set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
 	  	indsertUpdateData(query_insert_update2);
+	  	
 
 		messageData = orderInformation(id, "payment-gateway", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
 
@@ -771,6 +802,7 @@ app.post('/message', cors(), async function (req, res) {
 	  		var query_insert_update = "update "+table+" set advertisement_text = '"+message+"' , is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query_insert_update);
 	  		indsertUpdateData(query_insert_update);
+	  		
 		}
 
 		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() and is_active = true order by create_timestamp  DESC LIMIT 1";
@@ -814,6 +846,7 @@ app.post('/message', cors(), async function (req, res) {
 		
 		var query_insert_update2 = "update "+table+" set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
 	  	indsertUpdateData(query_insert_update2);
+	  	
 		messageData = orderInformation(id, "payment-gateway", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
 
 	}else if(nextTemplate == "paynow-property"){
@@ -823,6 +856,7 @@ app.post('/message', cors(), async function (req, res) {
 			var query_insert_update = "update "+table+" set advertisement_text = '"+message+"' , is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query_insert_update);
 	  		indsertUpdateData(query_insert_update);
+	  		
 	  	}
 
   		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by and is_active = true create_timestamp  DESC LIMIT 1";
@@ -866,6 +900,7 @@ app.post('/message', cors(), async function (req, res) {
 
 		var query_insert_update2 = "update "+table+" set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
 	  	indsertUpdateData(query_insert_update2);
+	  	
 		messageData = orderInformation(id, "payment-gateway", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
 
   }else if(nextTemplate == "payment-gateway"){
@@ -929,7 +964,8 @@ app.post('/message', cors(), async function (req, res) {
 	console.log("signature:", signature);	
 
 	var query_insert_update = "update "+table+" set transaction_uuid = '"+transaction_uuid+"', reference_number = '"+reference_number+"' , finalSignedDateTime = '"+finalSignedDateTime+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
-	indsertUpdateData(query_insert_update);									
+	indsertUpdateData(query_insert_update);		
+								
 
 	var html='';
 		//  html +="<!DOCTYPE html><html><body>";
@@ -1396,22 +1432,30 @@ function getConnection(){
 	connection.connect(function(err) {
       if (err){
       	console.error('error when connecting to db:', err);
-      	setTimeout(getConnection, 10000); 
+      	setTimeout(getConnection, 5000); 
       }
       console.log("Connected!");
     });
 	return connection;
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+var counter_retry_undefined = 0;
+var counter_max_retry_undefined = 3;
 
  async function fetchData(query_str){
 
  			console.log("query_str::::", query_str);
+ 			await sleep(1000);	
+ 			var connection = getConnection();
 			var aPromise =  new Promise(function(resolve, reject) { 
-			var connection = getConnection();
-  			connection.query(query_str, function (error, results, fields) {
-
-		    console.log('The fetchData solution before is: ', results);
+  			//connection.query(query_str, function (error, results, fields) {
+  			connection.query({sql: query_str, timeout: 5000}, function (error, results, fields) {
+  			console.log('The fetchData solution before is: ', results);
 
 			 if (error) {
 			 	console.error("fetchData ERROR 1 ::::", error);
@@ -1420,9 +1464,8 @@ function getConnection(){
             	console.log("results[0]", results[0]);
                 resolve(results[0]);
             }
-		   connection.end(function(err) { if (err) { return console.error('ERROR connection end fetchData:' + err.message); } console.log('Close the database connection.'); });
 		});
-
+  		
 	 }).then((response) => {
 	 	console.log("response", response)
 		return response;
@@ -1430,10 +1473,18 @@ function getConnection(){
 		console.error("fetchData ERROR 2:::", err)
 	});
 
+	connection.end(function(err) { if (err) { return console.error('ERROR connection end fetchData:' + err.message); } console.log('Close the database connection, fetchData'); });
+
 	var return_result = await aPromise;
+	if(return_result === 'undefined'){
+		if(counter_retry_undefined == counter_max_retry_undefined){
+			console.log("counter_retry_undefined", return_result)
+			counter_retry_undefined++;
+			fetchData(query_str);
+		}		
+	}
 	console.log("return_result", return_result);
 	return JSON.parse(JSON.stringify(return_result));
-
 }
 
 
@@ -1441,15 +1492,17 @@ function getConnection(){
 
 function indsertUpdateData(query){
 	
+	console.log("insert_query_str::::", query);
 	var connection = getConnection();
-	connection.query(query, function (error, results, fields) {
+	//connection.query(query, function (error, results, fields) {
+	connection.query({sql: query, timeout: 5000}, function (error, results, fields) {
 		  	if(error) {
 		 		console.error("indsertUpdateData ERROR::::", error);
 				throw error;
             }
 		  console.log('The indsertUpdateData solution is: ', results);
 	});
-	connection.end(function(err) { if (err) { return console.error('ERROR connection end indsertUpdateData:' + err.message); } console.log('Close the database connection.'); });
+	connection.end(function(err) { if (err) { return console.error('ERROR connection end indsertUpdateData:' + err.message); } console.log('Close the database connection, indsertUpdateData.'); });
 }
 
 //ask for upload image
@@ -2050,4 +2103,33 @@ function getToken(){
 	var date = new Date();
 	var result = srs()+"_"+date.getTime();
 	return result;
+}
+
+
+function mysql_real_escape_string (str) {
+	if (typeof str != 'string')
+	return str;
+
+	return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
+		switch (char) {
+		case "\0":
+		return "\\0";
+		case "\x08":
+		return "\\b";
+		case "\x09":
+		return "\\t";
+		case "\x1a":
+		return "\\z";
+		case "\n":
+		return "\\n";
+		case "\r":
+		return "\\r";
+		case "\"":
+		case "'":
+		case "\\":
+		case "%":
+		return "\\"+char; // prepends a backslash to backslash, percent,
+		// and double/single quotes
+		}
+	});
 }
