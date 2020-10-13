@@ -40,6 +40,11 @@ var bodyParser = require('body-parser'),
   app.use(helmet.noSniff()); 
   app.use(helmet.noCache());
 
+  app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
+
  // const nodemailer = require("nodemailer");
 
 // constants starts here
@@ -348,7 +353,7 @@ app.post('/message', cors(), async function (req, res) {
 	  		var query = "update "+table+" set ad_type = '"+message+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
-	  		
+
 	  		messageData = sendPublication(id, "adType" , "sample","<strong>"+message +"</strong>, Noting it down, thanks for your selection 😇 <br/>Next, let's select which publication you'd like the ad to appear in."); 
 	   	
 	   	}else{
@@ -668,7 +673,7 @@ app.post('/message', cors(), async function (req, res) {
 	   			
 	   	}else{
 
-	   		messageData = sendVehicleMileage(id, "text-to-advertise-vehicle" , "no-qr-code-vehicle", "Noted. <br/>Please share the mileage. <br/>Example: $ 9800 / yr "); 
+	   		messageData = sendVehicleMileage(id, "text-to-advertise-vehicle" , "no-qr-code-vehicle", "Noted. <br/>Please share the mileage."); 
 	   	}
 
   	}else if(nextTemplate == "text-to-advertise-property"){
