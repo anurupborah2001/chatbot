@@ -1,6 +1,6 @@
 'use strict';
 
-var SERVER_URL = 'https://7ccf727d.ngrok.io/';
+var SERVER_URL = 'http://d315xfu76uv2z9.cloudfront.net/';
 
 var bodyParser = require('body-parser'),
   express = require('express'),
@@ -40,16 +40,14 @@ var bodyParser = require('body-parser'),
   app.use(helmet.noSniff()); 
   app.use(helmet.noCache());
 
+  app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
+
  // const nodemailer = require("nodemailer");
 
-  // Database initialization
-  var connection = mysql.createConnection({
-	  host     : 'localhost',
-	  user     : 'root',
-	  password : '',
-	  database : 'sphchatdb'
-	});
-
+<<<<<<< HEAD
 
 // constants starts here
 
@@ -74,6 +72,32 @@ var s3_bucket_name_chatbot_advertiserimage = "s3-chatbot-advertiser-image";
 
 app.listen(3000, () => {
  console.log("Server running on port 3000");
+=======
+// constants starts here
+
+var GST_RATE = process.env.GST_RATE;
+var VEHICLE = process.env.VEHICLE;
+var SALE = process.env.SALE;
+var RENT = process.env.RENT;
+var PROPERTY = process.env.PROPERTY;
+var SERVICES = process.env.SERVICES;
+var UNIT_PRICE_TST = process.env.UNIT_PRICE_TST;
+var UNIT_PRICE_ZB = process.env.UNIT_PRICE_ZB;
+var OTHERS = process.env.OTHERS;
+var session_ttl_minutes = process.env.SESSION_TTL_MINUTES;
+var signed_field_names=process.env.SIGNED_FIELD_NAMES;
+var secretKey=process.env.SECRETKEY;
+var access_key = process.env.ACCESS_KEY;
+var profile_id = process.env.PROFILE_ID;
+var payment_url = process.env.PAYMENT_URL;
+var s3_bucket_name_chatbot_advertiserimage = process.env.CHATBOT_S3_UPLOAD_BUCKET_NAME;
+var table = process.env.CHATBOT_DB_TABLE;
+
+// ends constants here
+
+app.listen(process.env.CHATBOT_CONTAINER_PORT, () => {
+ console.log("Server running on port " + process.env.CHATBOT_CONTAINER_PORT);
+>>>>>>> dev
 });
 
 //Get request
@@ -93,8 +117,32 @@ app.get("/welcome", cors(), (req, res, next) => {
 });
 
 
+//Reference https://stackoverflow.com/questions/40494050/uploading-image-to-amazon-s3-using-multer-s3-nodejs
+//https://www.npmjs.com/package/multer-s3
+//s3 upload
 
+var saveFileStorageLocation = "";
+var dateUploaded = getGenericDate(0);
 
+var uploads3 = multer({
+    storage: multerS3({
+       s3: s3,
+       bucket: s3_bucket_name_chatbot_advertiserimage,
+       storageClass: 'INTELLIGENT_TIERING',
+       key: function (req, file, cb) {
+        	console.log("uploads3 req.body:: ",req.body);
+        	var temp = JSON.parse(JSON.stringify(req.body));
+        	var values_json = JSON.parse(temp.data);
+        	var fileStruct = dateUploaded + "/" + values_json.id + "/";
+            saveFileStorageLocation = microtime.now() +"."+ file.originalname.split(".")[1];
+       	    cb(null, `${fileStruct}${saveFileStorageLocation}`); //use getGenericDate(0) aditionally to save file date wise, for unique file key date in yyyy-mm-dd format.
+       }
+   })
+});
+
+app.post('/fileupload', uploads3.array('uploadFile',1), function (req, res, next) {
+
+<<<<<<< HEAD
 
 //Reference https://stackoverflow.com/questions/40494050/uploading-image-to-amazon-s3-using-multer-s3-nodejs
 //https://www.npmjs.com/package/multer-s3
@@ -115,6 +163,11 @@ app.get("/welcome", cors(), (req, res, next) => {
 //local storage comment next two lines below and uncomment above set of code to enable s3 upload.
 var upload = multer({ dest: '/Users/sssingh/upload/' })
 app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
+=======
+//local storage comment next two lines below and uncomment above set of code to enable s3 upload.
+//var upload = multer({ dest: '/Users/sssingh/upload/' })
+//app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
+>>>>>>> dev
    
    // req.file is the name of your file in the form above, here 'uploaded_file'
    // req.body will hold the text fields, if there were any 
@@ -123,7 +176,8 @@ app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
    var temp = JSON.parse(JSON.stringify(req.body, null, 2));
    var values_json = JSON.parse(temp.data);
 
-   console.log("file", req.file['filename']);
+   //console.log("file", req.file['filename']);
+   console.log("file", req.files[0]['originalname']);
 
    var id = values_json.id;
    console.log("contact number as id :" , id);
@@ -134,7 +188,8 @@ app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
    var nextTemplate = values_json.nextTemplate;
    console.log("nextTemplate received:" , nextTemplate);
 
-   var fileName = req.file['filename'];
+   //var fileName = req.file['filename'];
+   var fileName = req.files[0]['originalname'];
    
    var messageData; 
 
@@ -161,9 +216,10 @@ app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
 
 	   		if(fileName){
 
-	   			var query = "update sphchatdb.sph_chatbot set ad_service_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now() and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set ad_service_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now() and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   		}
 	   		
 		    messageData = sendHasQrCode(id, "qr-code-services" , "nature-services", "Great, Service picture received.🖇 <br/>Do you also have the QR Code ?");
@@ -173,21 +229,27 @@ app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
 
 	   		if(fileName){
 
-	   			var query = "update sphchatdb.sph_chatbot set ad_service_qr_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update  "+table+" set ad_service_qr_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   		}
 	   		
+<<<<<<< HEAD
 			 messageData = sendNoQrCode(id, "no-qr-code-services" , "qr-code-services", "<strong>Well done. QR code received.<br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable.");
+=======
+			 messageData = sendNoQrCode(id, "no-qr-code-services" , "qr-code-services", "<strong>Well done. QR code received.</strong><br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable.");
+>>>>>>> dev
 
 	   }
 	   if(nextTemplate == "has-qr-code-vehicle"){
 
 	   		if(fileName){
 
-	   			var query = "update sphchatdb.sph_chatbot set ad_vehicle_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update  "+table+" set ad_vehicle_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   		}
 	   		
 		    messageData = sendHasQrCode(id, "qr-code-vehicle" , "upload-vehicle-image", "Great Vehicle picture received.🖇 <br/>Do you also have the QR Code ?");
@@ -196,9 +258,10 @@ app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
 
 	   		if(fileName){
 
-	   			var query = "update sphchatdb.sph_chatbot set ad_service_image_name = '"+fileName+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update  "+table+" set ad_service_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   		}
 	   		
 		    messageData = sendHasQrCode(id, "qr-code-services" , "has-upload-service-image", "Great Service picture received.🖇 <br/>Do you also have the QR Code ?");
@@ -208,9 +271,10 @@ app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
 	   		
 	   		if(fileName){
 
-	   			var query = "update sphchatdb.sph_chatbot set ad_property_image_name = '"+fileName+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update  "+table+" set ad_property_image_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   		}
 
 		    messageData = sendHasQrCode(id, "qr-code-property" , "upload-property-image", "Great Property picture received.🖇 <br/>Do you also have the QR Code ?");
@@ -219,37 +283,49 @@ app.post('/fileupload', upload.single('uploadFile'), function (req, res) {
 
 	   		if(fileName){
 	   			
-	   			var query = "update sphchatdb.sph_chatbot set ad_vehicle_qr_code_name = '"+fileName+"' , has_vehicle_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update  "+table+" set ad_vehicle_qr_code_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' , has_vehicle_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   		}else{
 
-	   			var query = "update sphchatdb.sph_chatbot set ad_vehicle_qr_code_name = '' , has_vehicle_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update  "+table+" set ad_vehicle_qr_code_name = '' , has_vehicle_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   		}
 
+<<<<<<< HEAD
 		    messageData = sendNoQrCode(id,"no-qr-code-vehicle", "has-qr-code-vehicle", "<strong>Well done. QR code received.<br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); ;
+=======
+		    messageData = sendNoQrCode(id,"no-qr-code-vehicle", "has-qr-code-vehicle", "<strong>Well done. QR code received.</strong><br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); ;
+>>>>>>> dev
 
 	   }else if(nextTemplate == "qr-code-property-upload-mlutipart"){
 
 	   		if(fileName){
-	   			var query = "update sphchatdb.sph_chatbot set ad_property_qr_code_name = '"+fileName+"'  , has_property_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update  "+table+" set ad_property_qr_code_name = '"+saveFileStorageLocation+"' ,date_uploaded = '"+dateUploaded+"' , has_property_qr_code = true where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   			
 	   		}else{
 
-	   			var query = "update sphchatdb.sph_chatbot set ad_property_qr_code_name = ''  , has_property_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set ad_property_qr_code_name = ''  , has_property_qr_code = false where phone_number = '"+id+"'  and token = '"+hash_token+"' and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			    console.log("query: ", query);
 			    indsertUpdateData(query);
+			    
 	   		}
 
+<<<<<<< HEAD
 		    messageData = sendNoQrCode(id,"no-qr-code-property", "has-qr-code-property", "<strong>Well done. QR code received.<br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
+=======
+		    messageData = sendNoQrCode(id,"no-qr-code-property", "has-qr-code-property", "<strong>Well done. QR code received.</strong><br/>What is the price in SGD? Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
+>>>>>>> dev
 
 	   }
 	   }catch(e) {
-        console.log(e);
+        console.error("ERROR occured 2:", e);
         messageData = sendError("Error occured due to inactive session.Please start from beginning");
     }
     if(!messageData){
@@ -279,7 +355,8 @@ app.post('/message', cors(), async function (req, res) {
   var id = data.id;
   console.log("contact number as id :" , id);
 
-  var message = data.textMessage;
+  //var message = data.textMessage;
+  var message = mysql_real_escape_string(data.textMessage);
   console.log("message received:" , message);
 
   var nextTemplate = data.nextTemplate;
@@ -323,9 +400,14 @@ app.post('/message', cors(), async function (req, res) {
 
 		if(firstName){
 			
+<<<<<<< HEAD
 			var query = "insert into sphchatdb.sph_chatbot (first_name, last_name, phone_number, email, create_timestamp, token, validity, bill_to_address_line1, bill_to_address_city, bill_to_address_state, bill_to_address_postal_code, bill_to_country) values ('"+firstName+"','"+lastName+"','"+id+"','"+email+"','"+create_timestamp+"', '"+hash_token+"', now() + INTERVAL '"+session_ttl_minutes+"' MINUTE, '"+bill_to_address_line1+"', '"+bill_to_address_city+"', '"+bill_to_address_state+"', '"+bill_to_address_postal_code+"', 'SG')";
+=======
+			var query = "insert into "+table+" (first_name, last_name, phone_number, email, create_timestamp, token, validity, bill_to_address_line1, bill_to_address_city, bill_to_address_state, bill_to_address_postal_code, bill_to_country) values ('"+firstName+"','"+lastName+"','"+id+"','"+email+"','"+create_timestamp+"', '"+hash_token+"', now() + INTERVAL '"+session_ttl_minutes+"' MINUTE, '"+bill_to_address_line1+"', '"+bill_to_address_city+"', '"+bill_to_address_state+"', '"+bill_to_address_postal_code+"', 'SG')";
+>>>>>>> dev
 			console.log("query: ", query);
 			indsertUpdateData(query);
+			
 		}
 		
   		messageData = sendSample(id, "publication" , "", "What's the nature of your advertisement? <br/>Click on the ad type that you'd like me to walk you through👇 <br/>These are our advertisement sample."); 
@@ -335,9 +417,10 @@ app.post('/message', cors(), async function (req, res) {
   		if(message){
 
 	   		console.log("nextTemplate message : ", message);
-	  		var query = "update sphchatdb.sph_chatbot set ad_type = '"+message+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		var query = "update "+table+" set ad_type = '"+message+"' where phone_number = '"+id+"' and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
+
 	  		messageData = sendPublication(id, "adType" , "sample","<strong>"+message +"</strong>, Noting it down, thanks for your selection 😇 <br/>Next, let's select which publication you'd like the ad to appear in."); 
 	   	
 	   	}else{
@@ -350,9 +433,10 @@ app.post('/message', cors(), async function (req, res) {
   		if(message){
 
   			console.log("nextTemplate message : ", message);
-	  		var query = "update sphchatdb.sph_chatbot set publication = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		var query = "update "+table+" set publication = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
+	  		
 	  		messageData = sendAvailableDates(id, "availableDate" , "publication" ,"<strong>"+message +"</strong> it is! <br/>As a quick note, there is a cut off time of 2 pm the next day for "+message+" 😊 <br/>Please select the available START and END date of publication 🗓"); 
 	  	
 	 	}else{
@@ -367,9 +451,10 @@ app.post('/message', cors(), async function (req, res) {
 	   			
 	   			console.log("nextTemplate message : ", message);
 		  		var from_to_date_range= message.split(" - ");
-		  		var query = "update sphchatdb.sph_chatbot set start_date = '"+from_to_date_range[0]+"', end_date = '"+from_to_date_range[1]+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+		  		var query = "update "+table+" set start_date = '"+from_to_date_range[0]+"', end_date = '"+from_to_date_range[1]+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
+		  		
 		  		messageData = sendSaleRentService(id, "sale-rent-service" , "adType","Okay, <strong>"+ message +"</strong>. Advertisement is for Sale ,Rent or Services ?"); 
 
 	   		}else{
@@ -383,7 +468,7 @@ app.post('/message', cors(), async function (req, res) {
   	}else if(nextTemplate == 'sale-rent-service'){
 
 
-  			var query = "select ad_type from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by create_timestamp  DESC LIMIT 1";
+  			var query = "select ad_type from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by create_timestamp  DESC LIMIT 1";
 
   			var results = await fetchData(query);
   			console.log("callback ",results);
@@ -392,10 +477,10 @@ app.post('/message', cors(), async function (req, res) {
 			console.log("ad_type from select query returned value :", ad_type);
 
 			if(message){
-				   	var query_insert_update = "update sphchatdb.sph_chatbot set ad_nature = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+				   	var query_insert_update = "update "+table+" set ad_nature = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 			  		console.log("query: ", query_insert_update);
 			  		indsertUpdateData(query_insert_update);
-
+			  		
 
 		  		if(ad_type.trim() == VEHICLE){
 
@@ -473,9 +558,10 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 
-  			var query = "update sphchatdb.sph_chatbot set service_nature = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+  			var query = "update "+table+" set service_nature = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
+	  		
 
 	  		messageData = sendUploadAdImage(id, "has-upload-service-image" , "sale-rent-service", "Noted, <strong>"+ message +". 👍 </strong><br/>Please upload your advertisement image.");  
 	   			
@@ -490,9 +576,10 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 
-  			var query = "update sphchatdb.sph_chatbot set vehicle_brand = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+  			var query = "update "+table+" set vehicle_brand = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
+	  		
 
 	  		messageData = sendUploadAdImage(id, "has-qr-code-vehicle" , "sale-rent-service", "Noted, <strong>"+ message +". 👍 </strong><br/>Please upload your vehicle image.");  
 	   			
@@ -507,9 +594,10 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 
-	   			var query = "update sphchatdb.sph_chatbot set property_type = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set property_type = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
+		  		
 
 		  		messageData = sendUploadAdImage(id, "has-qr-code-property" , "sale-rent-service", "Noted, <strong>"+ message +". 👍</strong> <br/>Please upload your property image.");  		
 	   	}else{
@@ -557,28 +645,39 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 
-  			var query = "update sphchatdb.sph_chatbot set service_charge = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+  			var query = "update "+table+" set service_charge = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
+	  		
 
   		}
-  		var query = "select publication from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+  		var query = "select publication from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		var pub = await fetchData(query);
 		var choosen_language =  pub.publication;
-
+		var maxTextLength = 0;
 		var text_language_specific = "";
 
 		if(choosen_language == "Lianhe ZaoBao"){
 
+<<<<<<< HEAD
 			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
 
 		}else if(choosen_language == "The Straits Times"){
 
 			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
 
+=======
+			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
+			maxTextLength = 40;
+
+		}else if(choosen_language == "The Straits Times"){
+
+			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
+			maxTextLength = 65;
+>>>>>>> dev
 		}
 
-  		messageData = sendAdText(id, "paynow-service" , "qr-code-services-upload-mlutipart", "Okay, <strong>"+ message +". 👍 </strong><br/>" + text_language_specific ); 
+  		messageData = sendAdText(id, "paynow-service" , "qr-code-services-upload-mlutipart", "Okay, <strong>"+ message +". 👍 </strong><br/>" + text_language_specific , maxTextLength); 
 
   		
   	}else if(nextTemplate == "no-qr-code-property"){
@@ -586,9 +685,10 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 
-  				var query = "update sphchatdb.sph_chatbot set property_price = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+  				var query = "update "+table+" set property_price = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
+		  		
 
 		  		messageData = sendBedRoomsInproperty(id, "property-bedrooms-number" , "qr-code-property-upload-mlutipart", "Okay,<strong> "+ message +". 👍 </strong><br/>How many bedrooms are there in the property? <br/>Example: 1, 2, 3, 4, 5 <br/>NOTE: Only numbers are accepted."); 
 
@@ -605,9 +705,10 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 	   			
-	   			var query = "update sphchatdb.sph_chatbot set vehicle_price = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set vehicle_price = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
+		  		
 
 		  		messageData = sendVehicleRegistrationDate(id, "vehicle-registration-date" , "qr-code-vehicle-upload-mlutipart", "Okay, <strong>"+ message +". 👍</strong> <br/>What is the Registration date ? 🗓");
 	   	}else{
@@ -623,9 +724,10 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 	   			
-	   			var query = "update sphchatdb.sph_chatbot set property_bedrooms = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set property_bedrooms = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
+		  		
 
 		  		messageData = sendPropertySize(id, "text-to-advertise-property" , "no-qr-code-property", "Noted. <strong>"+message+" </strong>bedrooms. <br/>What is property size in sqft. <br/>Example: 3000, 3200, 4000 NOTE: Only numbers are accepted. ");	
 	   	}else{
@@ -639,88 +741,110 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 
-  			var query = "update sphchatdb.sph_chatbot set vehicle_reg_date = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+  			var query = "update "+table+" set vehicle_reg_date = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
-	  		messageData = sendVehicleMileage(id, "text-to-advertise-vehicle" , "no-qr-code-vehicle", "Noted. It's <strong>"+ message +"</strong>. <br/>Please share the mileage. <br/>Example: $ 9800 / yr "); 
+	  		
+	  		messageData = sendVehicleMileage(id, "text-to-advertise-vehicle" , "no-qr-code-vehicle", "Noted. It's <strong>"+ message +"</strong>. <br/>Please share the mileage. "); 
 	   			
 	   	}else{
 
-	   		messageData = sendVehicleMileage(id, "text-to-advertise-vehicle" , "no-qr-code-vehicle", "Noted. <br/>Please share the mileage. <br/>Example: $ 9800 / yr "); 
+	   		messageData = sendVehicleMileage(id, "text-to-advertise-vehicle" , "no-qr-code-vehicle", "Noted. <br/>Please share the mileage."); 
 	   	}
 
   	}else if(nextTemplate == "text-to-advertise-property"){
 
-		var query = "select publication from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"' order by create_timestamp  DESC LIMIT 1";
+		var query = "select publication from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"' order by create_timestamp  DESC LIMIT 1";
 		var pub = await fetchData(query);
 		var choosen_language =  pub.publication;
-
+		var maxTextLength = 0;
 		var text_language_specific = "";
 
 		if(choosen_language == "Lianhe ZaoBao"){
 
+<<<<<<< HEAD
 			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
 
 		}else if(choosen_language == "The Straits Times"){
 
 			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
 
+=======
+			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
+			maxTextLength = 40;
+		}else if(choosen_language == "The Straits Times"){
+
+			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
+			maxTextLength =67;
+>>>>>>> dev
 		}
 
   		if(message){
 
-  			var query = "update sphchatdb.sph_chatbot set property_area = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+  			var query = "update "+table+" set property_area = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query);
 	  		indsertUpdateData(query);
+	  		
 
-	  		messageData = sendAdText(id, "paynow-property" , "property-bedrooms-number", "Okay. It's <br/><strong>"+ message +"</strong>.<br/>" +text_language_specific); 
+	  		messageData = sendAdText(id, "paynow-property" , "property-bedrooms-number", "Okay. It's <br/><strong>"+ message +"</strong>.<br/>" +text_language_specific, maxTextLength); 
 	    }else{
 
-	    	messageData = sendAdText(id, "paynow-property" , "property-bedrooms-number", "Okay.<br/>"+text_language_specific); 
+	    	messageData = sendAdText(id, "paynow-property" , "property-bedrooms-number", "Okay.<br/>"+text_language_specific, maxTextLength); 
 	    }
 
   		
   }else if(nextTemplate == "text-to-advertise-vehicle"){
 
-  		var query = "select publication from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+  		var query = "select publication from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		var pub = await fetchData(query);
 		var choosen_language =  pub.publication;
-
+		var maxTextLength = 0;
 		var text_language_specific = "";
 
 		if(choosen_language == "Lianhe ZaoBao"){
 
+<<<<<<< HEAD
 			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise otherwise you can click on <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='10%' height='10%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
 
 		}else if(choosen_language == "The Straits Times"){
 
 			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to re start. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
 
+=======
+			text_language_specific = "As you chose <strong style='color:#0a9fc2'>Lianhe ZaoBao</strong> to list your advertisement, please type the text in <strong style='color:#0a9fc2''>Chinese Language</strong>  you want to advertise otherwise you can click on <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='10%' height='10%'> to start again or click <br/> <img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 40 length (Including Spaces)";
+			maxTextLength = 40;
+		}else if(choosen_language == "The Straits Times"){
+
+			text_language_specific = "As you chose  <strong style='color:#0a9fc2'>The Straits Times</strong>  to list your advertisement, please type the text in <strong style='color:#0a9fc2''>English Language</strong> you want to advertise, you can click on  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/home.png' width='15%' height='15%'> to start again or click  <br/><img src='https://chatbox-images.s3-ap-southeast-1.amazonaws.com/back.png' width='15%' height='15%'>  to go back to the previous state. <br/>NOTE:  Characters should not exceed 67 length (Including Spaces)";
+			maxTextLength = 67;
+>>>>>>> dev
 		}
 
   		if(message){
 	   			
-	   			var query = "update sphchatdb.sph_chatbot set vehicle_mileage = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	   			var query = "update "+table+" set vehicle_mileage = '"+message+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 		  		console.log("query: ", query);
 		  		indsertUpdateData(query);
+		  		
 
-		  		messageData = sendAdText(id, "paynow-vehicle" , "vehicle-registration-date", "Okay. It's <br/><strong>"+ message +"</strong>.<br/>"+text_language_specific);
+		  		messageData = sendAdText(id, "paynow-vehicle" , "vehicle-registration-date", "Okay. It's <br/><strong>"+ message +"</strong>.<br/>"+text_language_specific, maxTextLength);
 		  		
 	   	}else{
 
-	   		messageData = sendAdText(id, "paynow-vehicle" , "vehicle-registration-date", "Okay.<br/>"+text_language_specific);
+	   		messageData = sendAdText(id, "paynow-vehicle" , "vehicle-registration-date", "Okay.<br/>"+text_language_specific, maxTextLength);
 	   	}
 
   }else if(nextTemplate == "paynow-service"){
 
   		if(message){
 
-	  		var query_insert_update = "update sphchatdb.sph_chatbot set advertisement_text = '"+message+"', is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		var query_insert_update = "update "+table+" set advertisement_text = '"+message+"', is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query_insert_update);
 	  		indsertUpdateData(query_insert_update);
+	  		
 		}
 
-		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  order by create_timestamp  DESC LIMIT 1";
+		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
 		var result = await fetchData(query); 
 		var first_name = result.first_name;
 		var last_name = result.last_name;
@@ -758,8 +882,14 @@ app.post('/message', cors(), async function (req, res) {
 		
 		//emailRecepientMetadata(id,userMap);
 		
+<<<<<<< HEAD
 		var query_insert_update2 = "update sphchatdb.sph_chatbot set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
 	  	indsertUpdateData(query_insert_update2);
+=======
+		var query_insert_update2 = "update "+table+" set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
+	  	indsertUpdateData(query_insert_update2);
+	  	
+>>>>>>> dev
 
 		messageData = orderInformation(id, "payment-gateway", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
 
@@ -767,12 +897,17 @@ app.post('/message', cors(), async function (req, res) {
 
   		if(message){
 
-	  		var query_insert_update = "update sphchatdb.sph_chatbot set advertisement_text = '"+message+"' , is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+	  		var query_insert_update = "update "+table+" set advertisement_text = '"+message+"' , is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query_insert_update);
 	  		indsertUpdateData(query_insert_update);
+	  		
 		}
 
+<<<<<<< HEAD
 		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() and is_active = false order by create_timestamp  DESC LIMIT 1";
+=======
+		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() and is_active = true order by create_timestamp  DESC LIMIT 1";
+>>>>>>> dev
 		var result = await fetchData(query); 
 		var first_name = result.first_name;
 		var last_name = result.last_name;
@@ -811,20 +946,27 @@ app.post('/message', cors(), async function (req, res) {
 		
 		//emailRecepientMetadata(id,userMap);
 		
+<<<<<<< HEAD
 		var query_insert_update2 = "update sphchatdb.sph_chatbot set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
 	  	indsertUpdateData(query_insert_update2);
+=======
+		var query_insert_update2 = "update "+table+" set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
+	  	indsertUpdateData(query_insert_update2);
+	  	
+>>>>>>> dev
 		messageData = orderInformation(id, "payment-gateway", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
 
 	}else if(nextTemplate == "paynow-property"){
 
 		if(message){
 
-			var query_insert_update = "update sphchatdb.sph_chatbot set advertisement_text = '"+message+"' , is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
+			var query_insert_update = "update "+table+" set advertisement_text = '"+message+"' , is_active = true where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = false order by create_timestamp  DESC LIMIT 1";
 	  		console.log("query: ", query_insert_update);
 	  		indsertUpdateData(query_insert_update);
+	  		
 	  	}
 
-  		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by create_timestamp  DESC LIMIT 1";
+  		var query = "select first_name,last_name,publication,ad_type,ad_nature,start_date,end_date, DATEDIFF(end_date, start_date) AS day from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by and is_active = true create_timestamp  DESC LIMIT 1";
 		var result = await fetchData(query); 
 		var first_name = result.first_name;
 		var last_name = result.last_name;
@@ -863,13 +1005,23 @@ app.post('/message', cors(), async function (req, res) {
 
 		//emailRecepientMetadata(id,userMap);
 
+<<<<<<< HEAD
 		var query_insert_update2 = "update sphchatdb.sph_chatbot set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
 	  	indsertUpdateData(query_insert_update2);
+=======
+		var query_insert_update2 = "update "+table+" set price = '"+price+"', days = '"+days+"' , sub_total = '"+sub_total+"', gst = '"+GST+"' , total = '"+total+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
+	  	indsertUpdateData(query_insert_update2);
+	  	
+>>>>>>> dev
 		messageData = orderInformation(id, "payment-gateway", "text-to-advertise-property" , price , ad_type, publication, start_date, end_date, days, sub_total, GST, total );
 
   }else if(nextTemplate == "payment-gateway"){
 
+<<<<<<< HEAD
   	var query = "select first_name,last_name,email,phone_number,total,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_postal_code,bill_to_country from sphchatdb.sph_chatbot where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by create_timestamp  DESC LIMIT 1";
+=======
+  	var query = "select first_name,last_name,email,phone_number,total,bill_to_address_line1,bill_to_address_city,bill_to_address_state,bill_to_address_postal_code,bill_to_country from "+table+" where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now() order by create_timestamp  DESC LIMIT 1";
+>>>>>>> dev
   	var result = await fetchData(query); 
 	var first_name = result.first_name;
 	var last_name = result.last_name;
@@ -925,7 +1077,15 @@ app.post('/message', cors(), async function (req, res) {
     var signature = crypto.createHmac('sha256', secretKey)
 											.update(data)
 											.digest('base64');
+<<<<<<< HEAD
 	console.log("signature:", signature);										
+=======
+	console.log("signature:", signature);	
+
+	var query_insert_update = "update "+table+" set transaction_uuid = '"+transaction_uuid+"', reference_number = '"+reference_number+"' , finalSignedDateTime = '"+finalSignedDateTime+"' where phone_number = '"+id+"'  and token = '"+hash_token+"'  and validity >= now()  and is_active = true order by create_timestamp  DESC LIMIT 1";
+	indsertUpdateData(query_insert_update);		
+								
+>>>>>>> dev
 
 	var html='';
 		//  html +="<!DOCTYPE html><html><body>";
@@ -979,7 +1139,7 @@ app.post('/message', cors(), async function (req, res) {
   }
 
 	}catch(e) {
-        console.log(e);
+       console.error("ERROR occured 1 :", e);
        messageData = sendError("Error occured due to inactive session.Please start from beginning");
     }	
 
@@ -1096,7 +1256,7 @@ function orderInformation(id, templateName, previousTemplate , unitcost , adtype
 
 // send advertisement text
 
-function sendAdText(id, templateName, previousTemplate, templateText){
+function sendAdText(id, templateName, previousTemplate, templateText, maxTextLength){
 
 	 var uniqueTemplateId = getTemplateId();
 
@@ -1113,8 +1273,8 @@ function sendAdText(id, templateName, previousTemplate, templateText){
 		        "templateName" : "sendmessage",
 		        "textOption" : {
 		              "enableText": true,
-		              "maxTextLength": 15,
-		              "autoComplete": "on",
+		              "maxTextLength": maxTextLength,
+		              "autoComplete": "off",
 		              "autoOptions": ["Alabama","Alaska","Arizona","Arkansas","Arkansas2","Barkansas"]
 		         },
 
@@ -1181,7 +1341,7 @@ function sendVehicleMileage(id, templateName, previousTemplate, templateText){
 		        "textOption" : {
 		              "enableText": true,
 		              "maxTextLength": 15,
-		              "autoComplete": "on",
+		              "autoComplete": "off",
 		              "autoOptions": [" $ 8900 / yr "," $ 6200 / yr "," $ 800 / yr "," $ 6700 / yr "," $ 9800 / yr "," $ 5000 / yr "]
 		         },
 
@@ -1381,47 +1541,70 @@ function sendMakeBrandVehicle(id, templateName, previousTemplate, templateText){
 
 
 // create connection object
- function getConnection(){
-
+function getConnection(){
 	var connection = mysql.createConnection({
-	  host     : 'localhost',
-	  user     : 'root',
-	  password : '',
-	  database : 'sphchatdb'
-	});
-	connection.connect();
+          host     : process.env.CHATBOT_HOSTNAME,
+          user     : process.env.CHATBOT_USERNAME,
+          password : process.env.CHATBOT_PASSWORD,
+          database : process.env.CHATBOT_DB,
+          port     : process.env.CHATBOT_DB_PORT
+    });
+	connection.connect(function(err) {
+      if (err){
+      	console.error('error when connecting to db:', err);
+      	setTimeout(getConnection, 5000); 
+      }
+      console.log("Connected!");
+    });
 	return connection;
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+var counter_retry_undefined = 0;
+var counter_max_retry_undefined = 3;
 
  async function fetchData(query_str){
 
-
+ 			console.log("query_str::::", query_str);
+ 			await sleep(1000);	
+ 			var connection = getConnection();
 			var aPromise =  new Promise(function(resolve, reject) { 
-			var connection = getConnection();
-  			connection.query(query_str, function (error, results, fields) {
+  			//connection.query(query_str, function (error, results, fields) {
+  			connection.query({sql: query_str, timeout: 5000}, function (error, results, fields) {
+  			console.log('The fetchData solution before is: ', results);
 
-		    console.log('The fetchData solution before is: ', results);
-
-		    connection.end();
 			 if (error) {
-                reject(err);
+			 	console.error("fetchData ERROR 1 ::::", error);
+                reject(error);
             } else {
             	console.log("results[0]", results[0]);
                 resolve(results[0]);
             }
-		   
 		});
-
+  		
 	 }).then((response) => {
 	 	console.log("response", response)
 		return response;
+	}).catch((err) => {
+		console.error("fetchData ERROR 2:::", err)
 	});
 
-	 var return_result = await aPromise;
+	connection.end(function(err) { if (err) { return console.error('ERROR connection end fetchData:' + err.message); } console.log('Close the database connection, fetchData'); });
+
+	var return_result = await aPromise;
+	if(return_result === 'undefined'){
+		if(counter_retry_undefined == counter_max_retry_undefined){
+			console.log("counter_retry_undefined", return_result)
+			counter_retry_undefined++;
+			fetchData(query_str);
+		}		
+	}
 	console.log("return_result", return_result);
 	return JSON.parse(JSON.stringify(return_result));
-
 }
 
 
@@ -1429,12 +1612,17 @@ function sendMakeBrandVehicle(id, templateName, previousTemplate, templateText){
 
 function indsertUpdateData(query){
 	
+	console.log("insert_query_str::::", query);
 	var connection = getConnection();
-	connection.query(query, function (error, results, fields) {
-		  if (error) throw error;
+	//connection.query(query, function (error, results, fields) {
+	connection.query({sql: query, timeout: 5000}, function (error, results, fields) {
+		  	if(error) {
+		 		console.error("indsertUpdateData ERROR::::", error);
+				throw error;
+            }
 		  console.log('The indsertUpdateData solution is: ', results);
 	});
-	connection.end();
+	connection.end(function(err) { if (err) { return console.error('ERROR connection end indsertUpdateData:' + err.message); } console.log('Close the database connection, indsertUpdateData.'); });
 }
 
 //ask for upload image
@@ -2036,3 +2224,35 @@ function getToken(){
 	var result = srs()+"_"+date.getTime();
 	return result;
 }
+<<<<<<< HEAD
+=======
+
+
+function mysql_real_escape_string (str) {
+	if (typeof str != 'string')
+	return str;
+
+	return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
+		switch (char) {
+		case "\0":
+		return "\\0";
+		case "\x08":
+		return "\\b";
+		case "\x09":
+		return "\\t";
+		case "\x1a":
+		return "\\z";
+		case "\n":
+		return "\\n";
+		case "\r":
+		return "\\r";
+		case "\"":
+		case "'":
+		case "\\":
+		case "%":
+		return "\\"+char; // prepends a backslash to backslash, percent,
+		// and double/single quotes
+		}
+	});
+}
+>>>>>>> dev

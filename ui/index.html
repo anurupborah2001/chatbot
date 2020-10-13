@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat bot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.0.0/animate.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="https://cdn.bootcdn.net/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" rel="stylesheet" />
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://s3-classified-chatbot-dev.s3-ap-southeast-1.amazonaws.com/css/calentim.min.css" rel="stylesheet" />
+    <link type="text/css" href="https://s3-classified-chatbot-dev.s3-ap-southeast-1.amazonaws.com/css/styles.css" rel="stylesheet"/>
+
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.js'></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/awesomplete@1.1.5/awesomplete.min.js"></script>
+    <script type="text/javascript" src='https://s3-classified-chatbot-dev.s3-ap-southeast-1.amazonaws.com/js/calentim.min.js'></script>
+    <script type="text/javascript" src='https://s3-classified-chatbot-dev.s3-ap-southeast-1.amazonaws.com/js/bootstrap-maxlength.min.js'></script>
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div class="chaticon animate__animated animate__fadeInBottomRight" id="chatIcon">
+    <img src="img/ChatIcon.png" />
+</div>
+
+<!-- Welcome Screen -->
+<div id="chattwo" class="chattwoo animate__animated animate__fadeInBottomRight jsm-hide">
+    <!--Top Header-->
+    <div class="topheader">
+        <span class="crossforform hvr-grow closeChat"></span>
+        <div class="primaryheading animate__animated animate__backInDown">
+            <hr class="hr1" />
+            SPH Classified
+            <hr class="hr2" />
+        </div>
+        <div class="secondaryheading">Classy</div>
+    </div>
+
+    <img src="img/MapBg.png" class="imgbg" />
+    <!--Middle Section-->
+    <div class="middlesection">
+        <span class="bottomtext">
+          When you tap get started SPH Chat bot will start
+        </span>
+        <button class="button  hvr-hollow" style="vertical-align: middle;">
+            <div class="jsm-get-started-button"><span><strong>GET STARTED</strong></span><div>
+        </button>
+    </div>
+    <!--Bottom Section-->
+    <div class="bottomsection">
+        <div class="optionone">
+          <span class="optionheading">
+            <span class="optiononebgimage"></span>
+            <span class="text1">Replies instantly</span></span
+          >
+        </div>
+        <div class="optiontwo">
+          <span class="optionheading">
+            <span class="optiononebgimage"></span>
+            <span class="text1">Frequently asked questions</span></span
+          >
+        </div>
+    </div>
+</div>
+<!-- Chat Screen -->
+<div id="screen-content" class="chatthree animate__animated animate__fadeInRight formfull jsm-hide"></div>
+<!-- Modal -->
+<div class="modal fade" id="chatModal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="closeModal" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body" id="showImg">
+                <!-- here we create the image dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript" src="https://s3-classified-chatbot-dev.s3-ap-southeast-1.amazonaws.com/js/jquery.sphchatbot.js"></script>
+<script type="text/javascript" src="https://s3-classified-chatbot-dev.s3-ap-southeast-1.amazonaws.com/js/sphchatbot.js"></script>
+<script type="text/javascript" src="https://s3-classified-chatbot-dev.s3-ap-southeast-1.amazonaws.com/js/sphchatfileupload.js"></script>
+</div>
+</div>
+</body>
+</html>
