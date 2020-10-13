@@ -293,7 +293,8 @@ app.post('/message', cors(), async function (req, res) {
   var id = data.id;
   console.log("contact number as id :" , id);
 
-  var message = data.textMessage;
+  //var message = data.textMessage;
+  var message = mysql_real_escape_string(data.textMessage);
   console.log("message received:" , message);
 
   var nextTemplate = data.nextTemplate;
@@ -1442,6 +1443,7 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+
 var counter_retry_undefined = 0;
 var counter_max_retry_undefined = 3;
 
@@ -1454,8 +1456,7 @@ var counter_max_retry_undefined = 3;
   			//connection.query(query_str, function (error, results, fields) {
   			connection.query({sql: query_str, timeout: 5000}, function (error, results, fields) {
   			console.log('The fetchData solution before is: ', results);
-  			console.log('The fetchData solution before error: ', error);
-  			
+
 			 if (error) {
 			 	console.error("fetchData ERROR 1 ::::", error);
                 reject(error);
@@ -1491,6 +1492,7 @@ var counter_max_retry_undefined = 3;
 
 function indsertUpdateData(query){
 	
+	console.log("insert_query_str::::", query);
 	var connection = getConnection();
 	//connection.query(query, function (error, results, fields) {
 	connection.query({sql: query, timeout: 5000}, function (error, results, fields) {
@@ -2101,4 +2103,33 @@ function getToken(){
 	var date = new Date();
 	var result = srs()+"_"+date.getTime();
 	return result;
+}
+
+
+function mysql_real_escape_string (str) {
+	if (typeof str != 'string')
+	return str;
+
+	return str.replace(/[\0\x08\x09\x1a\n\r"'\\\%]/g, function (char) {
+		switch (char) {
+		case "\0":
+		return "\\0";
+		case "\x08":
+		return "\\b";
+		case "\x09":
+		return "\\t";
+		case "\x1a":
+		return "\\z";
+		case "\n":
+		return "\\n";
+		case "\r":
+		return "\\r";
+		case "\"":
+		case "'":
+		case "\\":
+		case "%":
+		return "\\"+char; // prepends a backslash to backslash, percent,
+		// and double/single quotes
+		}
+	});
 }
