@@ -2,72 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f1feccb1-35ab-40ab-bde8-bad7cf289976" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.dockerignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/chatbot.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/buildspec.yaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/config/.env" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/SPHChatPayload.pdf" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/css/calentim.min.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/css/styles.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/BackArrow.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/BirthdayIcon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/ChatIcon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/Close_White.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/EmojiIcon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/FrequentlyAaskedQuestions.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/HomeBtn.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/IconBg.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/IconBg2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/ListLemplate_MainImage.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/ListLemplate_ThumbImage.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/MapBg.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/Mic_Active.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/Mic_default.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/PreviousBtn.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/RepliesInstantly.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/SPH.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/SPHHome.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/SPHIconDefault.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/SPH_bg.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/Send.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/SendIcon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/SendIconBg.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/SendIcon_grey.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/Shadow.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/arrow-left.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/arrow-right.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/bg.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/bigbg.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/botlogo.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/download_grey.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/nextarrow.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/prearrow.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/sph-icon-bak.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/sph-icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/sph_calendar.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/templateDummyImage.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/templateShape.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/unsplash-birthday-annie-spratt.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/unsplash-christmas-darren-coleshill.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/unsplash-presentfinder-banner-luca-upper.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/unsplash-wedding-anne-edgar.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/js/bootstrap-maxlength.min.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/js/calentim.min.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/js/jquery.sphchatbot.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/js/sphchatbot.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/js/sphchatfileupload.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/chat-app.js" beforeDir="false" afterPath="$PROJECT_DIR$/chat-app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sql.sql" beforeDir="false" afterPath="$PROJECT_DIR$/sql.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/js/sphchatbot.js" beforeDir="false" afterPath="$PROJECT_DIR$/ui/js/sphchatbot.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -79,11 +16,11 @@
     <option name="isMigrated" value="true" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/chat-app.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1474">
+            <state relative-caret-position="2520">
               <caret line="168" column="76" selection-start-line="168" selection-start-column="76" selection-end-line="168" selection-end-column="76" />
             </state>
           </provider>
@@ -92,17 +29,44 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/ui/js/sphchatbot.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="11115">
-              <caret line="741" column="20" selection-start-line="741" selection-start-column="6" selection-end-line="741" selection-end-column="20" />
+            <state relative-caret-position="393">
+              <caret line="413" column="32" selection-start-line="413" selection-start-column="32" selection-end-line="413" selection-end-column="32" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ui/js/jquery.sphchatbot.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="8473">
+              <caret line="584" column="106" selection-start-line="584" selection-start-column="100" selection-end-line="584" selection-end-column="106" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ui/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-528">
+              <caret line="24" column="16" lean-forward="true" selection-start-line="24" selection-start-column="16" selection-end-line="24" selection-end-column="16" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.gitignore">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="45">
+              <caret line="3" column="5" selection-start-line="3" selection-start-column="5" selection-end-line="3" selection-end-column="5" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
+        <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" column="9" selection-start-line="2" selection-start-column="9" selection-end-line="2" selection-end-column="9" />
+            <state relative-caret-position="642">
+              <caret line="418" column="10" selection-start-line="418" selection-start-column="10" selection-end-line="418" selection-end-column="10" />
             </state>
           </provider>
         </entry>
@@ -132,6 +96,12 @@
       <find>homeButton</find>
       <find>inputAutoComplete</find>
       <find>globalVariable</find>
+      <find>typingIndicator</find>
+      <find>typing</find>
+      <find>statusCallback</find>
+      <find>chatbot</find>
+      <find>closeOnError</find>
+      <find>textManipulate</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$</dir>
@@ -168,7 +138,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="y" value="23" />
+    <option name="x" value="3" />
+    <option name="y" value="31" />
     <option name="width" value="1440" />
     <option name="height" value="811" />
   </component>
@@ -178,12 +149,18 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="chatbot" type="b2602c69:ProjectViewProjectNode" />
               <item name="chatbot" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="chatbot" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chatbot" type="462c0819:PsiDirectoryNode" />
+              <item name=".idea" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="chatbot" type="b2602c69:ProjectViewProjectNode" />
@@ -205,7 +182,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -256,10 +232,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="811" extended-state="0" />
+    <frame x="3" y="31" width="1440" height="811" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.27825466" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.28183118" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
@@ -356,29 +332,36 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/chat-app.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1474">
+        <state relative-caret-position="2520">
           <caret line="168" column="76" selection-start-line="168" selection-start-column="76" selection-end-line="168" selection-end-column="76" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ui/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
+        <state relative-caret-position="-528">
           <caret line="24" column="16" lean-forward="true" selection-start-line="24" selection-start-column="16" selection-end-line="24" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui/js/jquery.sphchatbot.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="8473">
+          <caret line="584" column="106" selection-start-line="584" selection-start-column="100" selection-end-line="584" selection-end-column="106" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ui/js/sphchatbot.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="11115">
-          <caret line="741" column="20" selection-start-line="741" selection-start-column="6" selection-end-line="741" selection-end-column="20" />
+        <state relative-caret-position="393">
+          <caret line="413" column="32" selection-start-line="413" selection-start-column="32" selection-end-line="413" selection-end-column="32" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="9" selection-start-line="2" selection-start-column="9" selection-end-line="2" selection-end-column="9" />
+        <state relative-caret-position="45">
+          <caret line="3" column="5" selection-start-line="3" selection-start-column="5" selection-end-line="3" selection-end-column="5" />
         </state>
       </provider>
     </entry>

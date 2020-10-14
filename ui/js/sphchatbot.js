@@ -332,6 +332,12 @@ $(function(){
         }
     }
 
+    var closeOnError = function(errMsg){
+        showPopUp.show("error",errMsg);
+        $(chatElement.inputChat + "," + chatElement.chatButton).attr("disabled",true);
+        chatbot.sphChatbot('typingIndicator', { delay: 0 });
+    }
+
     var ajaXRequest = function(chatData,isFileUpload = false,statusCallback){
 
         jQuery.ajax({
@@ -405,14 +411,12 @@ $(function(){
                     statusCallback(true)
                 }else{
                     var errMsgChatBot = (parseChatData.errMsg !== undefined) ? parseChatData.errMsg : errMsg.error_communicate;
-                    showPopUp.show("error",errMsgChatBot);
-                    $(chatElement.inputChat + "," + chatElement.chatButton).attr("disabled",true);
+                    closeOnError(errMsgChatBot)
                     statusCallback(false)
                 }
             },
             error: function (request, status, error) {
-                  showPopUp.show("error",errMsg.error_connect);
-                  $(chatElement.inputChat + "," + chatElement.chatButton).attr("disabled",true);
+                  closeOnError(errMsg.error_connect)
                   statusCallback(false)
             }
 
