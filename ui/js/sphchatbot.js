@@ -740,6 +740,52 @@ $(function(){
        });
     }
 
+
+      var acc = document.getElementsByClassName("accordion");
+        var i;
+
+        for (i = 0; i < acc.length; i++) {
+          acc[i].addEventListener("click", function () {
+            [].forEach.call(acc, function (el) {
+              el.classList.remove("active");
+              el.nextElementSibling.style.maxHeight = null;
+            });
+            this.classList.add("active");
+            var panel = this.nextElementSibling;
+            if (panel.style.maxHeight) {
+              panel.style.maxHeight = null;
+            } else {
+              panel.style.maxHeight = panel.scrollHeight + "px";
+            }
+          });
+        }
+
+
+      var coll = document.getElementsByClassName("collapsible");
+      var i;
+
+      for (i = 0; i < coll.length; i++) {
+        coll[i].addEventListener("click", function () {
+          this.classList.toggle("active");
+          var content = this.nextElementSibling;
+          if (content.style.display === "block") {
+            content.style.display = "none";
+          } else {
+            content.style.display = "block";
+          }
+        });
+      }
+
+      window.onload = function () {
+        var divToHide = document.getElementById("divToHide");
+        document.onclick = function (e) {
+          if (e.target.id !== "divToHide" && e.target.id !== "collapsible") {
+            //element clicked wasn't the div; hide the div
+            divToHide.style.display = "none";
+          }
+        };
+      };
+
    bindDateTimeAndRangePicker();
 
       //Define globalVariable

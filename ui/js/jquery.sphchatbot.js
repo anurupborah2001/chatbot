@@ -207,6 +207,16 @@ Date : 03.06.2020
          var html = '\
              <div id="headform" class="headerforchatscreen">\
                  <strong> <span class="textforform">' + this.options.botWelcomeMessage +'</span></strong>\
+                  <span id="collapsible" class="collapsible moreIcon"></span>\
+                         <div id="divToHide" class="content">\
+                           <ul type="none">\
+                             <li class="listStyle">\
+                               <span data-toggle="modal" data-target="#faqModal">Frequently asked questions</span>\
+                             </li>\
+                             <li class="listStyle"><span data-toggle="modal" data-target="#contactModal">Contact Details</span></li>\
+                           </ul>\
+                         </div>\
+                         <span class="dividerIcon"></span>\
                  <span class="crossforform hvr-grow closeChat"></span>\
              </div>\
              <div class="topheader2">\
