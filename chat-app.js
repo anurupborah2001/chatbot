@@ -1710,7 +1710,7 @@ function sendAvailableDates(id, templateName, previousTemplate, templateText){
 						       pastDateDisable: true,
 						       futureDateDisable: false,
 						       disableDates: [],
-						       selectDateRangeBetween : { start: start_date_available, end : end_date_available },
+						       selectDateRangeBetween : { startDate: start_date_available, endDate : end_date_available },
 						       dateDisableBetween : []
 						}
 
