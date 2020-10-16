@@ -2284,7 +2284,7 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
     height: 500px;
     overflow-y: scroll;
     border-radius: 10px;
-    background: linear-gradient(#FFFFFF, #EBF5FB);
+    background: linear-gradient(#FFFFFF, #cee8fb);
     overflow-x:hidden;
 }
 
@@ -2299,6 +2299,7 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
 
 .contact-modal-content{
     height: 200px;
+    overflow: hidden;
 }
 
 .contact-modal{
