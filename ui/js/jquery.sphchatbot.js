@@ -1319,7 +1319,8 @@ Date : 03.06.2020
                      let buttonItem = items.buttonElement[i];
                      let cssBtn = (items.buttonElement.length==1) ? 'buttonforbuttontemplate w-100' : "buttonforordertemplate";
                      cssBtn+= (i%2!=0) ? ' bg-light text-dark border' : '';
-                     cssBtn+= (i > 1) ? ' hoverforallbuttons' : '';
+                     //cssBtn+= (i > 1) ? ' hoverforallbuttons' : '';
+                     cssBtn+=' hoverforallbuttons';
                      let btnCls = (buttonItem.buttonClass!=undefined && buttonItem.buttonClass!=="") ? buttonItem.buttonClass  : "";
                      let styleCss = (items.buttonElement.length==1) ? ' style="vertical-align:middle"' : "";
                      let btnId = (buttonItem.buttonId !==undefined && buttonItem.buttonId!="") ? buttonItem.buttonId : buttonItem.buttonText.toLowerCase().replace(" ","-") + "-id";
