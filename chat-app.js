@@ -549,7 +549,7 @@ app.post('/message', cors(), async function (req, res) {
 
   		}else{
 
-  			messageData = sendNoQrCode(id,"no-qr-code-services", "has-qr-code-services" , "Noted. 👍 <br/>Note: We will create a QR code for you, with the given contact details.  <br/>What is the service charge in SGD? Example: 500 /day, 100 / hr etc <br/>"); 
+  			messageData = sendNoQrCode(id,"no-qr-code-services", "has-qr-code-services" , "Noted. 👍 <br/><strong>Note: We will create a QR code for you, with the given contact details. </strong> <br/>What is the service charge in SGD? Example: 500 /day, 100 / hr etc <br/>"); 
   		}
   	
   	}else if(nextTemplate == "qr-code-vehicle"){
@@ -560,7 +560,7 @@ app.post('/message', cors(), async function (req, res) {
 
   		}else{
 
-  			messageData = sendNoQrCode(id,"no-qr-code-vehicle", "has-qr-code-vehicle" , "Noted. 👍 <br/>Note: We will create a QR code for you, with the given contact details.  <br/>What is the price in SGD? <br/>Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
+  			messageData = sendNoQrCode(id,"no-qr-code-vehicle", "has-qr-code-vehicle" , "Noted. 👍 <br/><strong>Note: We will create a QR code for you, with the given contact details. </strong> <br/>What is the price in SGD? <br/>Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
   		}
   	
   	}else if(nextTemplate == "qr-code-property"){
@@ -571,7 +571,7 @@ app.post('/message', cors(), async function (req, res) {
 
   		}else{
 
-  			messageData = sendNoQrCode(id,"no-qr-code-property", "has-qr-code-property", "Noted 👍 <br/>Note: We will create a QR code for you, with the given contact details.  <br/>What is the price in SGD? <br/>Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
+  			messageData = sendNoQrCode(id,"no-qr-code-property", "has-qr-code-property", "Noted 👍 <br/><strong>Note: We will create a QR code for you, with the given contact details. </strong> <br/>What is the price in SGD? <br/>Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
 
   		}
 		
