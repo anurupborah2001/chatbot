@@ -73,8 +73,8 @@ html {
 	height: 580px;
 	position: absolute;
 	bottom: 0;
-	/*left: 35%;*/
-    right: 20px;
+	left: 35%;
+    /*right: 20px;*/
 	/*box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);*/
 	box-shadow: 0px 0px 3px 3px #AEAFAF;
 	border-radius: 15px 15px 0px 0px;
@@ -97,8 +97,8 @@ html {
 	height: 580px;
 	position: absolute;
 	bottom: 0;
-	/*left: 35%;*/
-	right: 20px;
+	left: 35%;
+	/*right: 20px;*/
 	/*box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);*/
 	/*box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);*/
 	box-shadow: 0px 0px 9px 3px #ebebeb;
@@ -692,9 +692,10 @@ input {
 	padding-left: 4%;
     margin-bottom: 8%;;*/
 	position: relative;
+	text-align: left;
 	max-width: 233px;
 	margin-right: 22px;
-	height: 40px;
+	min-height: 40px;
 	background-color: #005DB0;
 	box-shadow: 0px 0px 9px 3px #ebebeb;
 	font-size: 16px;
@@ -705,15 +706,15 @@ input {
 	display: inline-block;
     margin-top: 35px;
     padding: 0% 4%;
-    white-space: nowrap;
 }
 
 .timetext2 {
 	position: absolute;
-	top: 75%;
+	top: 91%;
     right: 0%;
 	color: #9a9a9a;
 	font-size: 12px;
+	white-space: nowrap;
 }
 
 .messagesendarea {
@@ -754,7 +755,7 @@ button:active {
 
 .typearea {
     align-self: center;
-    width: 173% !important;
+    width: 85% !important;
     border: none !important;
     background: transparent;
     font-size: 14px;
@@ -1180,6 +1181,7 @@ div.ordersummary span:first-child {
     margin-bottom: 14px;
     font-weight: 600;
 }
+
 
 .badgeSuccess{
     background-color: #005DB0;
@@ -2050,20 +2052,22 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
     text-decoration: underline;
 }
 
-/* The Modal (background) */
+/*
 .modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
+  display: none;
+  position: fixed;
+  z-index: 1;
+  padding-top: 100px;
+  left: unset;
+  top: unset;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.9);
 }
+*/
 
 /* Modal Content (image) */
 .modal-content {
@@ -2217,6 +2221,7 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
     margin-right: 20px;
 }
 
+/*
 .accordion:after {
     content: "\002B";
     color: #777;
@@ -2225,8 +2230,27 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
     margin-left: 5px;
 }
 
-.accordion.active:after {
+*/
+
+.accordion-ico.active:after {
     content: "\2212";
+}
+
+.accordion-ico:after {
+    content: "\002B";
+    color: #777;
+    font-weight: bold;
+    float: right;
+    margin-left: 5px;
+}
+
+.contact-ico{
+    color: grey;
+    margin-right: 10px;
+}
+
+.contact-body{
+    margin-top: 35px;
 }
 
 .panel {
@@ -2235,6 +2259,7 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-out;
+    color: #5d6363;
 }
 
 
@@ -2244,9 +2269,12 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
     width: 390px;
     height: 580px;
     position: absolute;
-    right: 20px !important;
-    left: unset;
-    top: 22%;
+    /*right: 20px !important;
+    left: unset; */
+    left: 35%;
+    top: unset;
+
+    bottom:0;
     border-radius: 15px 15px 0px 0px;
     padding-top: 20px;
 }
@@ -2286,6 +2314,20 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
 }
 
 
+
+
+/* Media query */
+@media screen and (max-width: 768px) {
+	.chatthree,
+	.chattwoo,.modal {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		right: 0 !important;
+		border-radius: 0px 0px 0px 0px;
+	}
+}
+
 /* 100% Image Width on Smaller Screens */
 @media only screen and (max-width: 700px){
   .modal-content {
@@ -2294,26 +2336,13 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
 }
 
 
-/* Media query */
-
-@media screen and (max-width: 325px) {
+@media screen and (max-width: 420px) {
 	.chatthree,
-	.chattwoo {
+	.chattwoo,.modal {
 		width: 100%;
 		height: 100%;
 		position: absolute;
-		right: 0;
-		border-radius: 0px 0px 0px 0px;
-	}
-}
-
-@media screen and (max-width: 374px) {
-	.chatthree,
-	.chattwoo {
-		width: 100%;
-		height: 100%;
-		position: absolute;
-		right: 0;
+		right: 0 !important;
 		border-radius: 0px 0px 0px 0px;
 	}
 }
@@ -2368,33 +2397,34 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
     }
 
 	.chatthree,
-	.chattwoo {
+	.chattwoo,.modal {
 		width: 100%;
 		height: 100%;
 		position: absolute;
-		right: 0;
+		right: 0 !important;
 		border-radius: 0px 0px 0px 0px;
 	}
 }
 
-@media screen and (max-width: 420px) {
+@media screen and (max-width: 374px) {
 	.chatthree,
-	.chattwoo {
+	.chattwoo,.modal {
 		width: 100%;
 		height: 100%;
 		position: absolute;
-		right: 0;
+		right: 0 !important;
 		border-radius: 0px 0px 0px 0px;
 	}
 }
 
-@media screen and (max-width: 768px) {
+
+@media screen and (max-width: 325px) {
 	.chatthree,
-	.chattwoo {
+	.chattwoo,.modal {
 		width: 100%;
 		height: 100%;
 		position: absolute;
-		right: 0;
+		right: 0 !important;
 		border-radius: 0px 0px 0px 0px;
 	}
 }

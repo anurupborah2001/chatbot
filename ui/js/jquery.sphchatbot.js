@@ -565,11 +565,11 @@ Date : 03.06.2020
             var sideClass = (user === this.options.leftUser) ? 'receivermessagetext' : 'sendermessage';
             var dFlex = (user === this.options.leftUser) ? 'd-inline ' : "";
             var msgTemplate =  (user === this.options.leftUser) ? '<div class="receivermessage animate__animated animate__fadeInUp">' : '';
-            msgTemplate += '<div class="' + dFlex + 'animate__animated animate__fadeInUp ' + sideClass + ' '+ (options.className || '') + '">' + text;
+            msgTemplate += '<div class="' + dFlex + 'animate__animated animate__fadeInUp ' + sideClass + ' '+ (options.className || '') + '"><span class="msgtxt">' + text;
             if (options.timestamp!=undefined &&  options.timestamp!== false) {
                 var ts = this.options.dateFormat(options.timestamp ? options.timestamp : new Date());
                 var timeTextCss = (user === this.options.leftUser) ? 'timetext ' : "timetext2";
-                msgTemplate+='<span class="' + timeTextCss + '">' + ts + '</span>';
+                msgTemplate+='</span><span class="' + timeTextCss + '">' + ts + '</span>';
                 this.options.state.lastTimestamp = ts;
             }
             msgTemplate+= '</div>';

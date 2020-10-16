@@ -615,7 +615,7 @@ app.post('/message', cors(), async function (req, res) {
 
   		}else{
 
-  			messageData = sendNoQrCode(id,"no-qr-code-services", "has-qr-code-services" , "Noted. 👍 <br/>What is the service charge in SGD? Example: 500 /day, 100 / hr etc <br/>"); 
+  			messageData = sendNoQrCode(id,"no-qr-code-services", "has-qr-code-services" , "Noted. 👍 <br/>Note: We will create a QR code for you, with the given contact details.  <br/>What is the service charge in SGD? Example: 500 /day, 100 / hr etc <br/>"); 
   		}
   	
   	}else if(nextTemplate == "qr-code-vehicle"){
@@ -626,7 +626,7 @@ app.post('/message', cors(), async function (req, res) {
 
   		}else{
 
-  			messageData = sendNoQrCode(id,"no-qr-code-vehicle", "has-qr-code-vehicle" , "Noted. 👍 <br/>What is the price in SGD? <br/>Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
+  			messageData = sendNoQrCode(id,"no-qr-code-vehicle", "has-qr-code-vehicle" , "Noted. 👍 <br/>Note: We will create a QR code for you, with the given contact details.  <br/>What is the price in SGD? <br/>Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
   		}
   	
   	}else if(nextTemplate == "qr-code-property"){
@@ -637,7 +637,7 @@ app.post('/message', cors(), async function (req, res) {
 
   		}else{
 
-  			messageData = sendNoQrCode(id,"no-qr-code-property", "has-qr-code-property", "Noted 👍 <br/>What is the price in SGD? <br/>Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
+  			messageData = sendNoQrCode(id,"no-qr-code-property", "has-qr-code-property", "Noted 👍 <br/>Note: We will create a QR code for you, with the given contact details.  <br/>What is the price in SGD? <br/>Example: 50000, 65080 etc <br/>NOTE: Only Numbers are acceptable."); 
 
   		}
 		
@@ -1774,17 +1774,33 @@ function sendPropertyType(id, templateName, previousTemplate, templateText){
 // send calender to available dates to choose from and to
 
 function sendAvailableDates(id, templateName, previousTemplate, templateText){
-	
-	var end_date_available = (new Date(new Date().getTime() + (90*60*60*24*1000))).toISOString().slice(0,10);
-	var start_date_available = (new Date(new Date().getTime() + (0*60*60*24*1000))).toISOString().slice(0,10);
+
+	var localDate = new Date();
+	localDate.setHours(localDate.getHours() - 8);
+	var day = localDate.getDay();
+	var millisecond = 60*60*24*1000;
+
+	var days_advance = 90;
+	var start_date_available = (new Date(localDate.getTime() + (1*millisecond))).toISOString().slice(0,10);
+
+	if(day == 5 && localDate.getHours() >= 13){
+		 start_date_available = (new Date(localDate.getTime() + (3*millisecond))).toISOString().slice(0,10);	
+	}
+	else if(day == 6){
+		 start_date_available = (new Date(localDate.getTime() + (2*millisecond))).toISOString().slice(0,10);
+	}
+	else if(day == 7){
+		 start_date_available = (new Date(localDate.getTime() + (1*millisecond))).toISOString().slice(0,10);
+	}
+	var end_date_available = (new Date(localDate.getTime() + (days_advance*millisecond))).toISOString().slice(0,10);
 	var uniqueTemplateId = getTemplateId();
- 
+ 	
 
 	var messageData = {
 				    "status" : 200,
 				    "msg" : "Success",
 				    "payload" : {
-				        "id" : "12345678",
+				        "id" : id,
 				       "textOption" : {
 				              "enableText": "false",
 				              "autoComplete": "off"
@@ -1815,10 +1831,8 @@ function sendAvailableDates(id, templateName, previousTemplate, templateText){
 						       pastDateDisable: true,
 						       futureDateDisable: false,
 						       disableDates: [],
-						       selectDateRangeBetween : {},
-						       dateDisableBetween : [
-						           { start: start_date_available, end : end_date_available }
-						       ]
+						       selectDateRangeBetween : { startDate: start_date_available, endDate : end_date_available },
+						       dateDisableBetween : []
 						}
 
 				    }
