@@ -1656,7 +1656,7 @@ function sendPropertyType(id, templateName, previousTemplate, templateText){
 function sendAvailableDates(id, templateName, previousTemplate, templateText){
 
 	var localDate = new Date();
-	localDate.setHours(localDate.getHours() - 8);
+	localDate.setHours(localDate.getHours() + 8);
 	var day = localDate.getDay();
 	var millisecond = 60*60*24*1000;
 
