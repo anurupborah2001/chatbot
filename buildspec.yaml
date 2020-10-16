@@ -27,5 +27,9 @@ phases:
       - echo Writing image definitions file...
       - echo Build completed on `date`
       - printf '[{"name":"classified-chatbot-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+cache:
+  paths:
+    - 'node_modules/**/*'
 artifacts:
-  files: '**/*'
+  files:
+    - '**/*'
