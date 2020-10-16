@@ -742,28 +742,53 @@ $(function(){
 
 
       var acc = document.getElementsByClassName("accordion");
-      var accico = document.getElementsByClassName("accordion-ico");
-        var i;
+      var i;
 //
 //        $(document).on('.accordion',"click", function(e) {
 //             $(thius)
 //        });
+
+//        for (i = 0; i < acc.length; i++) {
+//          acc[i].addEventListener("click", function () {
+//            [].forEach.call(acc, function (el) {
+//              el.classList.remove("active");
+//              el.childNodes[3].classList.remove("active");
+//              el.nextElementSibling.style.maxHeight = null;
+//            });
+//            this.classList.add("active");
+//            this.childNodes[3].classList.add("active");
+//            var panel = this.nextElementSibling;
+//            if (panel.style.maxHeight) {
+//              panel.style.maxHeight = null;
+//            } else {
+//              panel.style.maxHeight = panel.scrollHeight + "px";
+//            }
+//          });
+//        }
+
+
         for (i = 0; i < acc.length; i++) {
-          acc[i].addEventListener("click", function () {
-            [].forEach.call(acc, function (el) {
-              el.classList.remove("active");
-              el.childNodes[3].classList.remove("active");
-              el.nextElementSibling.style.maxHeight = null;
+            acc[i].addEventListener("click", function () {
+                if(!this.classList.contains("active")){
+                      [].forEach.call(acc, function (el) {
+                        el.classList.remove("active");
+                        el.childNodes[3].classList.remove("active");
+                        el.nextElementSibling.style.maxHeight = null;
+                    });
+                     this.classList.add("active");
+                     this.childNodes[3].classList.add("active");
+                     var panel = this.nextElementSibling;
+                      if (panel.style.maxHeight) {
+                        panel.style.maxHeight = null;
+                      } else {
+                        panel.style.maxHeight = panel.scrollHeight + "px";
+                      }
+                }else {
+                    this.classList.remove("active");
+                    this.childNodes[3].classList.remove("active");
+                    this.nextElementSibling.style.maxHeight = null;
+                }
             });
-            this.classList.add("active");
-            this.childNodes[3].classList.add("active");
-            var panel = this.nextElementSibling;
-            if (panel.style.maxHeight) {
-              panel.style.maxHeight = null;
-            } else {
-              panel.style.maxHeight = panel.scrollHeight + "px";
-            }
-          });
         }
 
 
