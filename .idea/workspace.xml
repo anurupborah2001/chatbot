@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f1feccb1-35ab-40ab-bde8-bad7cf289976" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/ui/img/Call_Icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/Email_Icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/FAQs.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/MoreIcon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ui/img/SmallDivider.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="e0d4e458-736a-4561-8719-6ffb3f25f3cf" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/ui/css/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/ui/css/styles.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ui/img/RepliesInstantly.png" beforeDir="false" afterPath="$PROJECT_DIR$/ui/img/RepliesInstantly.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/ui/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ui/js/bootstrap-maxlength.min.js" beforeDir="false" afterPath="$PROJECT_DIR$/ui/js/bootstrap-maxlength.min.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui/js/jquery.sphchatbot.js" beforeDir="false" afterPath="$PROJECT_DIR$/ui/js/jquery.sphchatbot.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ui/js/sphchatbot.js" beforeDir="false" afterPath="$PROJECT_DIR$/ui/js/sphchatbot.js" afterDir="false" />
     </list>
@@ -28,38 +22,78 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="4" selection-start-line="4" selection-end-line="4" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="642">
-              <caret line="433" column="10" selection-start-line="433" selection-start-column="10" selection-end-line="433" selection-end-column="10" />
+            <state relative-caret-position="45">
+              <caret line="3" column="5" selection-start-line="3" selection-start-column="5" selection-end-line="3" selection-end-column="5" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/.idea/workspace.xml~610f399b1de2c44af03dcf7165c20b0faea2dff9">
-          <provider selected="true" editor-type-id="text-editor" />
+        <entry file="file://$PROJECT_DIR$/ui/js/sphchatbot.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-10472">
+              <caret line="52" column="31" selection-start-line="52" selection-start-column="22" selection-end-line="52" selection-end-column="31" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ui/js/jquery.sphchatbot.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="370">
+              <caret line="571" column="37" selection-start-line="571" selection-start-column="37" selection-end-line="571" selection-end-column="37" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="642">
+              <caret line="488" column="10" selection-start-line="488" selection-start-column="10" selection-end-line="488" selection-end-column="10" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ui/index.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="642">
+              <caret line="241" column="102" lean-forward="true" selection-start-line="241" selection-start-column="36" selection-end-line="241" selection-end-column="102" />
+              <folding>
+                <element signature="e#5866#5871#0" expanded="true" />
+                <element signature="e#5914#5919#0" expanded="true" />
+                <element signature="e#5930#5935#0" expanded="true" />
+                <element signature="e#7857#7862#0" expanded="true" />
+                <element signature="e#7905#7910#0" expanded="true" />
+                <element signature="e#7921#7926#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/ui/css/styles.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="342">
+              <caret line="2274" column="13" selection-start-line="2274" selection-start-column="13" selection-end-line="2274" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/ui/js/bootstrap-maxlength.min.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="463">
+              <caret line="117" column="88" selection-start-line="117" selection-start-column="88" selection-end-line="117" selection-end-column="88" />
+            </state>
+          </provider>
         </entry>
       </file>
     </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>port</find>
-      <find>PROFILE_ID</find>
-      <find>CHATBOT_DB</find>
-      <find>aws-sdk</find>
-      <find>3000</find>
-      <find>config/</find>
-      <find>CHATBOT_HOSTNAME</find>
-      <find>getConnection</find>
       <find>connection</find>
       <find>destroy</find>
       <find>chatHomeBtn</find>
@@ -82,6 +116,14 @@
       <find>modal</find>
       <find>myModal</find>
       <find>faqs</find>
+      <find>.panel</find>
+      <find>maxle</find>
+      <find>badge</find>
+      <find>.sendermessage</find>
+      <find>timetext</find>
+      <find>sideClass</find>
+      <find>btn-input</find>
+      <find>.modal</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$</dir>
@@ -101,9 +143,10 @@
         <option value="$PROJECT_DIR$/ui/js/sphchatfileupload.js" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/ui/js/sphchatbot.js" />
+        <option value="$PROJECT_DIR$/ui/js/bootstrap-maxlength.min.js" />
         <option value="$PROJECT_DIR$/ui/js/jquery.sphchatbot.js" />
-        <option value="$PROJECT_DIR$/ui/css/styles.css" />
         <option value="$PROJECT_DIR$/ui/index.html" />
+        <option value="$PROJECT_DIR$/ui/css/styles.css" />
       </list>
     </option>
   </component>
@@ -158,12 +201,6 @@
               <item name="chatbot" type="462c0819:PsiDirectoryNode" />
               <item name="ui" type="462c0819:PsiDirectoryNode" />
               <item name="css" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="chatbot" type="b2602c69:ProjectViewProjectNode" />
-              <item name="chatbot" type="462c0819:PsiDirectoryNode" />
-              <item name="ui" type="462c0819:PsiDirectoryNode" />
-              <item name="img" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="chatbot" type="b2602c69:ProjectViewProjectNode" />
@@ -229,7 +266,7 @@
     <frame x="0" y="23" width="1440" height="811" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.29756796" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.21816881" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
@@ -321,13 +358,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" selection-start-line="4" selection-end-line="4" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ui/js/calentim.min.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="165">
@@ -342,43 +372,68 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/ui/js/jquery.sphchatbot.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="253">
-          <caret line="215" column="103" selection-start-line="215" selection-start-column="103" selection-end-line="215" selection-end-column="103" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ui/js/sphchatbot.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="516">
-          <caret line="777" selection-start-line="777" selection-end-line="786" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ui/css/styles.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="210" column="45" selection-start-line="210" selection-start-column="45" selection-end-line="210" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/ui/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3060">
-          <caret line="204" column="102" selection-start-line="204" selection-start-column="102" selection-end-line="204" selection-end-column="102" />
-          <folding>
-            <element signature="e#5583#5590#1" expanded="true" />
-            <element signature="e#9424#9431#1" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/ui/img/RepliesInstantly.png">
       <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$PROJECT_DIR$/ui/img/FAQs.png">
       <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="642">
+          <caret line="488" column="10" selection-start-line="488" selection-start-column="10" selection-end-line="488" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="5" selection-start-line="3" selection-start-column="5" selection-end-line="3" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui/js/bootstrap-maxlength.min.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="463">
+          <caret line="117" column="88" selection-start-line="117" selection-start-column="88" selection-end-line="117" selection-end-column="88" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui/js/jquery.sphchatbot.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="370">
+          <caret line="571" column="37" selection-start-line="571" selection-start-column="37" selection-end-line="571" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui/js/sphchatbot.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-10472">
+          <caret line="52" column="31" selection-start-line="52" selection-start-column="22" selection-end-line="52" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="642">
+          <caret line="241" column="102" lean-forward="true" selection-start-line="241" selection-start-column="36" selection-end-line="241" selection-end-column="102" />
+          <folding>
+            <element signature="e#5866#5871#0" expanded="true" />
+            <element signature="e#5914#5919#0" expanded="true" />
+            <element signature="e#5930#5935#0" expanded="true" />
+            <element signature="e#7857#7862#0" expanded="true" />
+            <element signature="e#7905#7910#0" expanded="true" />
+            <element signature="e#7921#7926#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ui/css/styles.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="342">
+          <caret line="2274" column="13" selection-start-line="2274" selection-start-column="13" selection-end-line="2274" selection-end-column="13" />
+        </state>
+      </provider>
     </entry>
   </component>
   <component name="masterDetails">
