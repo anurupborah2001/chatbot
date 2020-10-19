@@ -72,22 +72,18 @@ html {
 	width: 390px;
 	height: 580px;
 	position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
+	bottom: 0;
+	left: 35%;
     /*right: 20px;*/
 	/*box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);*/
 	box-shadow: 0px 0px 3px 3px #AEAFAF;
-    border-radius: 15px 15px;
-    /* border-radius: 15px 15px 0px 0px; */
+	border-radius: 15px 15px 0px 0px;
 	background-color: #005DB0;
 }
 .formtemplate{
 	width: 300px;
     max-width: 300px;
-
+	
 	/*box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);*/
 	box-shadow: 0px 0px 3px 3px #AEAFAF;
 	border-radius: 15px;
@@ -100,17 +96,13 @@ html {
 	width: 390px;
 	height: 580px;
 	position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
+	bottom: 0;
+	left: 35%;
 	/*right: 20px;*/
 	/*box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16), 0 2px 10px 0 rgba(0,0,0,0.12);*/
 	/*box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);*/
-    box-shadow: 0px 0px 9px 3px #ebebeb;
-    border-radius: 15px 15px;
-	/* border-radius: 15px 15px 0px 0px; */
+	box-shadow: 0px 0px 9px 3px #ebebeb;
+	border-radius: 15px 15px 0px 0px;
 	background: linear-gradient(#FFFFFF, #EBF5FB);
 }
 
@@ -155,7 +147,7 @@ html {
 .hr1,
 .hr2 {
 	border: 1.0px solid #42bdff;
-	/* width: 81px; */
+	width: 81px;
 	margin-top: 21px;
 }
 
@@ -637,7 +629,7 @@ html {
 .imgbg {
 	position: absolute;
 	top: 33%;
-	width:100%;
+	background-image: url('../img/MapBg.png');
 }
 
 input {
@@ -907,7 +899,7 @@ button:active {
 .carousel {
 	position: relative;
 	width: 240px;
-
+	
 	border-radius: 25px 25px 0px 0px;
 	position: relative;
     font-size: 14px;
@@ -973,7 +965,7 @@ button:active {
 	padding-right: 22px;
 	box-shadow: 0px 0px 9px 3px #ebebeb;
 	bottom: 86px;
-
+	
 	margin-right: 22px;
 	overflow-x: scroll;
 }
@@ -1137,7 +1129,7 @@ button:active {
 	width: 300px;
 	height: auto;
 	background-color: white;
-
+	
 	box-shadow: 0px 0px 9px 3px #ebebeb;
 
 }
@@ -1422,7 +1414,7 @@ input[type="button"] {
 		transition: .3s cubic-bezier(.4,.2,.5,1.4);
 		transform-origin: 1.43em -.43em;
 	}
-
+	
 	.awesomplete > ul[hidden],
 	.awesomplete > ul:empty {
 		opacity: 0;
@@ -1453,37 +1445,37 @@ input[type="button"] {
 		padding: .2em .5em;
 		cursor: pointer;
 	}
-
+	
 	.awesomplete > ul > li:hover {
 		background: hsl(200, 40%, 80%);
 		color: black;
 	}
-
+	
 	.awesomplete > ul > li[aria-selected="true"] {
 		background: hsl(205, 40%, 40%);
 		color: white;
 	}
-
+	
 		.awesomplete mark {
 			background: hsl(65, 75%, 78%);
 		}
-
+		
 		.awesomplete li:hover mark {
 			background:hsl(65, 75%, 78%);
 		}
-
+		
 		.awesomplete li[aria-selected="true"] mark {
 			background: hsl(86, 100%, 21%);
 			color: inherit;
 		}
 
 /*Anurup */
-  .jsm-hide,.date-hide,.date-time-hide,.time-hide
-  {
+  .jsm-hide,.date-hide,.date-time-hide,.time-hide 
+  { 
 	  display: none
     }
-   .jsm-quick-replies .jsm-quick-replies-container .jsm-quick-reply-option.jsm-show {
-	   transform: translateY(0)
+   .jsm-quick-replies .jsm-quick-replies-container .jsm-quick-reply-option.jsm-show { 
+	   transform: translateY(0) 
 	}
 
 	#typearea{
@@ -1542,7 +1534,7 @@ input[type="button"] {
 		margin-left: 22px;
 	}
 
-
+	
 	#checkbox_form{
 		margin-left: 22px;
 		margin-top: 22px;
@@ -1560,7 +1552,7 @@ input[type="button"] {
 	-ms-user-select: none;
 	user-select: none;
   }
-
+  
   .container1 input {
 	position: absolute;
 	opacity: 0;
@@ -1568,7 +1560,7 @@ input[type="button"] {
 	height: 0;
 	width: 0;
   }
-
+  
   .checkmark1 {
 	position: absolute;
 	top: 0;
@@ -1577,15 +1569,15 @@ input[type="button"] {
     width: 21px;
 	background-color: #eee;
   }
-
+  
   .container1:hover input ~ .checkmark1 {
 	background-color: #ccc;
   }
-
+  
   .container1 input:checked ~ .checkmark1 {
 	background-color: #2196F3;
   }
-
+  
   .checkmark1:after {
 	content: "";
 	position: absolute;
@@ -1594,7 +1586,7 @@ input[type="button"] {
   .container1 input:checked ~ .checkmark1:after {
 	display: block;
   }
-
+  
   .container1 .checkmark1:after {
 	left: 9px;
 	top: 5px;
@@ -1621,13 +1613,13 @@ input[type="button"] {
 	-ms-user-select: none;
 	user-select: none;
   }
-
+  
   .container2 input {
 	position: absolute;
 	opacity: 0;
 	cursor: pointer;
   }
-
+  
   .checkmark {
 	position: absolute;
 	top: 0;
@@ -1637,21 +1629,21 @@ input[type="button"] {
 	background-color: #eee;
 	border-radius: 50%;
   }
-
+  
   .container2:hover input ~ .checkmark {
 	background-color: #ccc;
   }
-
+  
   .container2 input:checked ~ .checkmark {
 	background-color: #2196F3;
   }
-
+  
   .checkmark:after {
 	content: "";
 	position: absolute;
 	display: none;
   }
-
+  
   .container2 input:checked ~ .checkmark:after {
 	display: block;
   }
@@ -1674,7 +1666,7 @@ input[type="button"] {
   font-size: 12px;
 }
 
-
+  
 .carousel-control-next, .carousel-control-prev{
 	position: absolute !important;
 	top:-46% !important;
@@ -2136,10 +2128,10 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
 .modal-footer {
 	display: flex;
 	justify-content: flex-start;
-	/* .btn {
+	.btn {
 		position: absolute;
 		right: 10px;
-	} */
+	}
 }
 
 
@@ -2277,13 +2269,13 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
     width: 390px;
     height: 580px;
     position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-    /* border-radius: 15px 15px 0px 0px; */
-    border-radius: 15px 15px 15px 15px;
+    /*right: 20px !important;
+    left: unset; */
+    left: 35%;
+    top: unset;
+
+    bottom:0;
+    border-radius: 15px 15px 0px 0px;
     padding-top: 20px;
 }
 
@@ -2330,7 +2322,7 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
 	.chatthree,
 	.chattwoo,.modal {
 		width: 100%;
-		height: 100vh;
+		height: 100%;
 		position: absolute;
 		right: 0 !important;
 		border-radius: 0px 0px 0px 0px;
@@ -2349,7 +2341,7 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
 	.chatthree,
 	.chattwoo,.modal {
 		width: 100%;
-        height: 100vh;
+		height: 100%;
 		position: absolute;
 		right: 0 !important;
 		border-radius: 0px 0px 0px 0px;
@@ -2408,7 +2400,7 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
 	.chatthree,
 	.chattwoo,.modal {
 		width: 100%;
-		height: 100vh;
+		height: 100%;
 		position: absolute;
 		right: 0 !important;
 		border-radius: 0px 0px 0px 0px;
@@ -2419,7 +2411,7 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
 	.chatthree,
 	.chattwoo,.modal {
 		width: 100%;
-		height: 100vh;
+		height: 100%;
 		position: absolute;
 		right: 0 !important;
 		border-radius: 0px 0px 0px 0px;
@@ -2431,7 +2423,7 @@ progress[value]::-webkit-progress-value::before,progress[value]::-moz-progress-b
 	.chatthree,
 	.chattwoo,.modal {
 		width: 100%;
-		height: 100vh;
+		height: 100%;
 		position: absolute;
 		right: 0 !important;
 		border-radius: 0px 0px 0px 0px;
