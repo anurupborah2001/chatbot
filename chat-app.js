@@ -1948,7 +1948,7 @@ function sendForm(){
 		                     }
 		                 },
 		                {
-		                    formType: "bill_to_address_line1",
+		                    formType: "text",
 		                    formId: "bill_to_address_line1",
 		                    formElemName: "bill_to_address_line1",
 		                    formLabel: "Address Line 1",
@@ -1963,7 +1963,7 @@ function sendForm(){
 		                    }
 		                },
 		                {
-		                    formType: "bill_to_address_city",
+		                    formType: "text",
 		                    formId: "bill_to_address_city",
 		                    formElemName: "bill_to_address_city",
 		                    formLabel: "City",
@@ -1978,7 +1978,7 @@ function sendForm(){
 		                    }
 		                },
 		                {
-		                    formType: "bill_to_address_state",
+		                    formType: "text",
 		                    formId: "bill_to_address_state",
 		                    formElemName: "bill_to_address_state",
 		                    formLabel: "State",
@@ -1993,7 +1993,7 @@ function sendForm(){
 		                    }
 		                },
 		                {
-		                    formType: "bill_to_address_postal_code",
+		                    formType: "number",
 		                    formId: "bill_to_address_postal_code",
 		                    formElemName: "bill_to_address_postal_code",
 		                    formLabel: "Postal Code",
