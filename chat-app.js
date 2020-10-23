@@ -1059,7 +1059,7 @@ function orderInformation(id, templateName, previousTemplate , unitcost , adtype
 			 			summaryHeader : "Summary",
 						payText : "Pay Now",
 						payLink : "https://www.straitstimes.com/",
-						headerText : "<span class='text11'>This ad will cost $"+unitcost+"/day</span> <br /> <span class='textred'>*Above Price is  without GST</span>", 
+						headerText : "<span class='text11'>This ad will cost SGD "+unitcost+"/day</span> <br /> <span class='textred'>*Above Price is  without GST</span>", 
 						bottomText : "Payment confirmation will be sent to the given email address",
 						buttonElement : [{
 			                     buttonText : "Pay Now",
@@ -1109,19 +1109,19 @@ function orderInformation(id, templateName, previousTemplate , unitcost , adtype
 								id: 7,
 								orderType: "text",
 								orderKey : "Sub Total",
-							    orderValue : "$ " + subtotal
+							    orderValue : "SGD " + subtotal
 							},
 							{
 								id: 8,
 								orderType: "text",
 								orderKey : "GST",
-							    orderValue : "$ " + gst + "(" + GST_RATE + "%)"
+							    orderValue : "SGD " + gst + "(" + GST_RATE + "%)"
 							},
 							{
 								id: 9,
 								orderType: "text",
 								orderKey : "Total",
-							    orderValue : "$ " + total
+							    orderValue : "SGD " + total
 							}
 
 						]
