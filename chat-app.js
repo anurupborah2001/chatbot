@@ -1059,7 +1059,7 @@ function orderInformation(id, templateName, previousTemplate , unitcost , adtype
 			 			summaryHeader : "Summary",
 						payText : "Pay Now",
 						payLink : "https://www.straitstimes.com/",
-						headerText : "<span class='text11'>This ad will cost $"+unitcost+"/day</span> <br /> <span class='textred'>*Above Price is  without GST</span>", 
+						headerText : "<span class='text11'>This ad will cost SGD "+unitcost+"/day</span> <br /> <span class='textred'>*Above Price is  without GST</span>", 
 						bottomText : "Payment confirmation will be sent to the given email address",
 						buttonElement : [{
 			                     buttonText : "Pay Now",
@@ -1109,19 +1109,19 @@ function orderInformation(id, templateName, previousTemplate , unitcost , adtype
 								id: 7,
 								orderType: "text",
 								orderKey : "Sub Total",
-							    orderValue : "$ " + subtotal
+							    orderValue : "SGD " + subtotal
 							},
 							{
 								id: 8,
 								orderType: "text",
 								orderKey : "GST",
-							    orderValue : "$ " + gst + "(" + GST_RATE + "%)"
+							    orderValue : "SGD " + gst + "(" + GST_RATE + "%)"
 							},
 							{
 								id: 9,
 								orderType: "text",
 								orderKey : "Total",
-							    orderValue : "$ " + total
+							    orderValue : "SGD " + total
 							}
 
 						]
@@ -1948,7 +1948,7 @@ function sendForm(){
 		                     }
 		                 },
 		                {
-		                    formType: "bill_to_address_line1",
+		                    formType: "text",
 		                    formId: "bill_to_address_line1",
 		                    formElemName: "bill_to_address_line1",
 		                    formLabel: "Address Line 1",
@@ -1963,7 +1963,7 @@ function sendForm(){
 		                    }
 		                },
 		                {
-		                    formType: "bill_to_address_city",
+		                    formType: "text",
 		                    formId: "bill_to_address_city",
 		                    formElemName: "bill_to_address_city",
 		                    formLabel: "City",
@@ -1978,7 +1978,7 @@ function sendForm(){
 		                    }
 		                },
 		                {
-		                    formType: "bill_to_address_state",
+		                    formType: "text",
 		                    formId: "bill_to_address_state",
 		                    formElemName: "bill_to_address_state",
 		                    formLabel: "State",
@@ -1993,7 +1993,7 @@ function sendForm(){
 		                    }
 		                },
 		                {
-		                    formType: "bill_to_address_postal_code",
+		                    formType: "number",
 		                    formId: "bill_to_address_postal_code",
 		                    formElemName: "bill_to_address_postal_code",
 		                    formLabel: "Postal Code",
