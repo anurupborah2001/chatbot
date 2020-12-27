@@ -1,0 +1,35 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - echo "Starting to install required dependencies"
+      - echo Entered the install phase...
+  pre_build:
+    commands:
+      - echo "Entered pre build phase"
+      - aws --version
+      - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+      - REPOSITORY_URI='587223226692.dkr.ecr.ap-southeast-1.amazonaws.com/ecr-classified-chatbot-dev'
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
+  build:
+    commands:
+      - echo Entered the build phase...
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -f Dockerfile -t $REPOSITORY_URI:latest .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
+  post_build:
+    commands:
+      - echo Entered the post_build phase...
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo Writing image definitions file...
+      - echo Build completed on `date`
+      - printf '[{"name":"classified-chatbot-container","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+cache:
+  paths:
+    - 'node_modules/**/*'
+artifacts:
+  files:
+    - '**/*'
