@@ -207,16 +207,6 @@ Date : 03.06.2020
          var html = '\
              <div id="headform" class="headerforchatscreen">\
                  <strong> <span class="textforform">' + this.options.botWelcomeMessage +'</span></strong>\
-                  <span id="collapsible" class="collapsible moreIcon"></span>\
-                         <div id="divToHide" class="content">\
-                           <ul type="none">\
-                             <li class="listStyle">\
-                               <span data-toggle="modal" data-target="#faqModal">Frequently asked questions</span>\
-                             </li>\
-                             <li class="listStyle"><span data-toggle="modal" data-target="#contactModal">Contact Details</span></li>\
-                           </ul>\
-                         </div>\
-                         <span class="dividerIcon"></span>\
                  <span class="crossforform hvr-grow closeChat"></span>\
              </div>\
              <div class="topheader2">\
@@ -565,11 +555,11 @@ Date : 03.06.2020
             var sideClass = (user === this.options.leftUser) ? 'receivermessagetext' : 'sendermessage';
             var dFlex = (user === this.options.leftUser) ? 'd-inline ' : "";
             var msgTemplate =  (user === this.options.leftUser) ? '<div class="receivermessage animate__animated animate__fadeInUp">' : '';
-            msgTemplate += '<div class="' + dFlex + 'animate__animated animate__fadeInUp ' + sideClass + ' '+ (options.className || '') + '"><span class="msgtxt">' + text;
+            msgTemplate += '<div class="' + dFlex + 'animate__animated animate__fadeInUp ' + sideClass + ' '+ (options.className || '') + '">' + text;
             if (options.timestamp!=undefined &&  options.timestamp!== false) {
                 var ts = this.options.dateFormat(options.timestamp ? options.timestamp : new Date());
                 var timeTextCss = (user === this.options.leftUser) ? 'timetext ' : "timetext2";
-                msgTemplate+='</span><span class="' + timeTextCss + '">' + ts + '</span>';
+                msgTemplate+='<span class="' + timeTextCss + '">' + ts + '</span>';
                 this.options.state.lastTimestamp = ts;
             }
             msgTemplate+= '</div>';
@@ -1319,8 +1309,7 @@ Date : 03.06.2020
                      let buttonItem = items.buttonElement[i];
                      let cssBtn = (items.buttonElement.length==1) ? 'buttonforbuttontemplate w-100' : "buttonforordertemplate";
                      cssBtn+= (i%2!=0) ? ' bg-light text-dark border' : '';
-                     //cssBtn+= (i > 1) ? ' hoverforallbuttons' : '';
-                     cssBtn+=' hoverforallbuttons';
+                     cssBtn+= (i > 1) ? ' hoverforallbuttons' : '';
                      let btnCls = (buttonItem.buttonClass!=undefined && buttonItem.buttonClass!=="") ? buttonItem.buttonClass  : "";
                      let styleCss = (items.buttonElement.length==1) ? ' style="vertical-align:middle"' : "";
                      let btnId = (buttonItem.buttonId !==undefined && buttonItem.buttonId!="") ? buttonItem.buttonId : buttonItem.buttonText.toLowerCase().replace(" ","-") + "-id";

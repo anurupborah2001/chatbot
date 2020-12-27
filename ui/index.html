@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
     <link href="https://cdn.bootcdn.net/ajax/libs/awesomplete/1.1.5/awesomplete.min.css" rel="stylesheet" />
     <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-    <link href="https://s3-classified-chatbot-dev.s3-ap-southeast-1.amazonaws.com/css/calentim.min.css" rel="stylesheet" />
+    <link href="css/calentim.min.css" rel="stylesheet" />
     <link type="text/css" href="css/styles.css" rel="stylesheet"/>
 
     <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
@@ -17,8 +17,8 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/awesomplete@1.1.5/awesomplete.min.js"></script>
-    <script type="text/javascript" src='https://s3-classified-chatbot-dev.s3-ap-southeast-1.amazonaws.com/js/calentim.min.js'></script>
-    <script type="text/javascript" src='https://s3-classified-chatbot-dev.s3-ap-southeast-1.amazonaws.com/js/bootstrap-maxlength.min.js'></script>
+    <script type="text/javascript" src='js/calentim.min.js'></script>
+    <script type="text/javascript" src='js/bootstrap-maxlength.min.js'></script>
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
     <script type="text/javascript" src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -26,28 +26,6 @@
 </head>
 
 <body>
-<div class="header-section">
-    <div class="navbar-section">
-        <img src="./img/SPHHome.png"/>
-        <span class="navbar-header">SPH Classified</span>
-    </div>
-    <div _ngcontent-xwo-c38="" class="svg-border-rounded text-light">
-        <svg
-                _ngcontent-xwo-c38=""
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 144.54 17.34"
-                preserveAspectRatio="none"
-                fill="currentColor"
-        >
-            <path
-                    _ngcontent-xwo-c38=""
-                    d="M144.54,17.34H0V0H144.54ZM0,0S32.36,17.34,72.27,17.34,144.54,0,144.54,0"
-            ></path>
-        </svg>
-    </div>
-</div>
-
-
 <div class="chaticon animate__animated animate__fadeInBottomRight" id="chatIcon">
     <img src="img/ChatIcon.png" />
 </div>
@@ -77,20 +55,17 @@
     </div>
     <!--Bottom Section-->
     <div class="bottomsection">
-        <div class="optiontwo">
+        <div class="optionone">
           <span class="optionheading">
-            <span class="optiononebgimage faqs"></span>
-            <span class="text1 ml-5 pl-3" data-toggle="modal" data-target="#faqModal"><a href="#">Frequently asked questions</a></span></span>
+            <span class="optiononebgimage"></span>
+            <span class="text1">Replies instantly</span></span
+          >
         </div>
         <div class="optiontwo">
           <span class="optionheading">
-            <span class="optiononebgimage call-icon"></span>
-            <span class="text1 ml-5 pl-3"><a href="tel:1800-289-9988">1800-289-9988</a></span></span>
-        </div>
-        <div class="optiontwo">
-          <span class="optionheading">
-            <span class="optiononebgimage email-icon"></span>
-            <span class="text1 ml-5 pl-3"><a href="mailto:class@sph.com.sg">class@sph.com.sg</a></span></span>
+            <span class="optiononebgimage"></span>
+            <span class="text1">Frequently asked questions</span></span
+          >
         </div>
     </div>
 </div>
@@ -115,154 +90,11 @@
 
     </div>
 </div>
-
-<div class="modal fade" id="faqModal" tabindex="-1" role="dialog" aria-labelledby="faqModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header faq-header">
-                <strong>FAQ</strong>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-
-                <span class="accordion d-flex justify-content-between">
-                    <span class="accordion-headline">Booking deadline</span>
-                    <span class="accordion-ico"></span>
-                </span>
-                <div class="panel">
-                    <p>
-                        The advertisement order must reach us by 2pm for next day&#39;s publication, or 2pm on Friday for Sundays&#39; and Monday&#39;s publication.
-                    </p>
-                </div>
-
-                <span class="accordion d-flex justify-content-between">
-                    <span class="accordion-headline">What are the different advertisement formats or classifications?</span>
-                    <span class="accordion-ico"></span>
-                </span>
-                <div class="panel">
-                    <p>
-                        <a href="https://www.imsph.sg/classifieds-description/" target="_blank">https://www.imsph.sg/classifieds-description/</a>
-                    </p>
-                </div>
-
-                <span class="accordion d-flex justify-content-between">
-                    <span class="accordion-headline">Can I book my advertisements in other formats (run-on, semi-display, display)</span>
-                    <span class="accordion-ico"></span>
-                </span>
-                <div class="panel">
-                    <p>
-                    <ul>
-                        <li>Call: <a href="tel:1800-289-9988">1800-289-9988</a></li>
-                        <li>Email: <a href="mailto:class@sph.com.sg">class@sph.com.sg</a></li>
-                    </ul>
-                    </p>
-                </div>
-
-
-                <span class="accordion d-flex justify-content-between">
-                    <span class="accordion-headline">Can I book my ads in other publications (TNP, BH/BM, WB/SM, TM, Tabla!, etc)</span>
-                    <span class="accordion-ico"></span>
-                </span>
-                <div class="panel">
-                    <p>
-                    <ul>
-                        <li>Call: <a href="tel:1800-289-9988">1800-289-9988</a></li>
-                        <li>Email: <a href="mailto:class@sph.com.sg">class@sph.com.sg</a></li>
-                    </ul>
-                    </p>
-                </div>
-
-
-                <span class="accordion d-flex justify-content-between">
-                    <span class="accordion-headline">Will a sales representative call me to confirm my advertisement placement?</span>
-                    <span class="accordion-ico"></span>
-                </span>
-                <div class="panel">
-                    <p>No, unless there is a text error or if translation is required</p>
-                </div>
-
-                <span class="accordion d-flex justify-content-between">
-                    <span class="accordion-headline">How do I amend the content in my advertisement booking?</span>
-                    <span class="accordion-ico"></span>
-                </span>
-                <div class="panel">
-                    <p>
-                        Call: <a href="tel:1800-289-9988">1800-289-9988</a> by 2pm for next day&#39;s publication, or 2pm on Friday for Sundays&#39; and Monday&#39;s publication
-                    </p>
-                </div>
-
-                <span class="accordion d-flex justify-content-between">
-                    <span class="accordion-headline">What if there is an error in my published advertisement?</span>
-                    <span class="accordion-ico"></span>
-                </span>
-                <div class="panel">
-                    <p>Call: <a href="tel:1800-289-9988">1800-289-9988</a></p>
-                </div>
-
-                <span class="accordion d-flex justify-content-between">
-                    <span class="accordion-headline">Where can I see my advertisement online?</span>
-                    <span class="accordion-ico"></span>
-                </span>
-                <div class="panel">
-                    <p>You may view your advertisement on <a href="https://www.stclassifieds.sg" target="_blank">stclassifieds.sg</a> or the digital e-paper that is available on <a href="https://www.straitstimes.com" target="_blank">straitstimes.com</a> or <a href="https://www.zaobao.com.sg" target="_blank">zaobao.sg</a></p>
-                </div>
-
-                <span class="accordion d-flex justify-content-between">
-                    <span class="accordion-headline">Is my payment secured?</span>
-                    <span class="accordion-ico"></span>
-                </span>
-                <div class="panel">
-                    <p>Yes</p>
-                </div>
-
-                <span class="accordion d-flex justify-content-between">
-                    <span class="accordion-headline">Will I receive an invoice?</span>
-                    <span class="accordion-ico"></span>
-                </span>
-                <div class="panel">
-                    <p>An e-invoice will be sent to your email address that you had provided</p>
-                </div>
-
-                <span class="accordion d-flex justify-content-between">
-                    <span class="accordion-headline">Can I book my ads in the main news section of the newspaper?</span>
-                    <span class="accordion-ico"></span>
-                </span>
-                <div class="panel">
-                    <ul>
-                        <li>Call: <a href="tel:1800-289-9988">1800-289-9988</a></li>
-                        <li>Email: <a href="mailto:mkgsales@sph.com.sg">mkgsales@sph.com.sg</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-<div class="modal fade contact-modal" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="contactModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content contact-modal-content">
-            <div class="modal-header contact-header">
-                <strong>Contact Details</strong>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body contact-body">
-                <span class="d-flex">
-                    <span class="text1 ml-0"><i class="fa fa-phone contact-ico"></i><a href="tel:1800-289-9988">1800-289-9988</a></span>
-                </span>
-                <span class="d-flex">
-                    <span class="text1 ml-0"><i class="fa fa-envelope contact-ico"></i><a href="mailto:class@sph.com.sg">class@sph.com.sg</a></span>
-                </span>
-            </div>
-        </div>
-    </div>
-    <script type="text/javascript" src="https://s3-classified-chatbot-dev.s3-ap-southeast-1.amazonaws.com/js/jquery.sphchatbot.js"></script>
-    <script type="text/javascript" src="js/sphchatbot.js"></script>
-    <script type="text/javascript" src="https://s3-classified-chatbot-dev.s3-ap-southeast-1.amazonaws.com/js/sphchatfileupload.js"></script>
+<script type="text/javascript" src="js/jquery.sphchatbot.js"></script>
+<script type="text/javascript" src="js/sphchatbot.js"></script>
+<script type="text/javascript" src="js/sphchatfileupload.js"></script>
+<script type="text/javascript" src="js/artyom.window.min.js"></script>
+<script type="text/javascript" src="js/sphchatbotspeech.js"></script>
 </div>
 </div>
 </body>

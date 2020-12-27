@@ -332,12 +332,6 @@ $(function(){
         }
     }
 
-    var closeOnError = function(errMsg){
-        showPopUp.show("error",errMsg);
-        $(chatElement.inputChat + "," + chatElement.chatButton).attr("disabled",true);
-        chatbot.sphChatbot('typingIndicator', { delay: 0 });
-    }
-
     var ajaXRequest = function(chatData,isFileUpload = false,statusCallback){
 
         jQuery.ajax({
@@ -411,12 +405,14 @@ $(function(){
                     statusCallback(true)
                 }else{
                     var errMsgChatBot = (parseChatData.errMsg !== undefined) ? parseChatData.errMsg : errMsg.error_communicate;
-                    closeOnError(errMsgChatBot)
+                    showPopUp.show("error",errMsgChatBot);
+                    $(chatElement.inputChat + "," + chatElement.chatButton).attr("disabled",true);
                     statusCallback(false)
                 }
             },
             error: function (request, status, error) {
-                  closeOnError(errMsg.error_connect)
+                  showPopUp.show("error",errMsg.error_connect);
+                  $(chatElement.inputChat + "," + chatElement.chatButton).attr("disabled",true);
                   statusCallback(false)
             }
 
@@ -489,8 +485,8 @@ $(function(){
         $(chatElement.chatWelcomeWindow).show();
         $(chatElement.chatWindow).hide(500);
         resetRequestTemplate();
-        inputAutoComplete.destroy(chatElement.inputChat);
         chatbot.sphChatbot('reset');
+
      });
 
      //On pay Now Clicked
@@ -739,83 +735,6 @@ $(function(){
             sendPicker($(this),"selectDateTimeAndRangePicker",extra_config);
        });
     }
-
-
-      var acc = document.getElementsByClassName("accordion");
-      var i;
-//
-//        $(document).on('.accordion',"click", function(e) {
-//             $(thius)
-//        });
-
-//        for (i = 0; i < acc.length; i++) {
-//          acc[i].addEventListener("click", function () {
-//            [].forEach.call(acc, function (el) {
-//              el.classList.remove("active");
-//              el.childNodes[3].classList.remove("active");
-//              el.nextElementSibling.style.maxHeight = null;
-//            });
-//            this.classList.add("active");
-//            this.childNodes[3].classList.add("active");
-//            var panel = this.nextElementSibling;
-//            if (panel.style.maxHeight) {
-//              panel.style.maxHeight = null;
-//            } else {
-//              panel.style.maxHeight = panel.scrollHeight + "px";
-//            }
-//          });
-//        }
-
-
-        for (i = 0; i < acc.length; i++) {
-            acc[i].addEventListener("click", function () {
-                if(!this.classList.contains("active")){
-                      [].forEach.call(acc, function (el) {
-                        el.classList.remove("active");
-                        el.childNodes[3].classList.remove("active");
-                        el.nextElementSibling.style.maxHeight = null;
-                    });
-                     this.classList.add("active");
-                     this.childNodes[3].classList.add("active");
-                     var panel = this.nextElementSibling;
-                      if (panel.style.maxHeight) {
-                        panel.style.maxHeight = null;
-                      } else {
-                        panel.style.maxHeight = panel.scrollHeight + "px";
-                      }
-                }else {
-                    this.classList.remove("active");
-                    this.childNodes[3].classList.remove("active");
-                    this.nextElementSibling.style.maxHeight = null;
-                }
-            });
-        }
-
-
-      var coll = document.getElementsByClassName("collapsible");
-      var i;
-
-      for (i = 0; i < coll.length; i++) {
-        coll[i].addEventListener("click", function () {
-          this.classList.toggle("active");
-          var content = this.nextElementSibling;
-          if (content.style.display === "block") {
-            content.style.display = "none";
-          } else {
-            content.style.display = "block";
-          }
-        });
-      }
-
-      window.onload = function () {
-        var divToHide = document.getElementById("divToHide");
-        document.onclick = function (e) {
-          if (e.target.id !== "divToHide" && e.target.id !== "collapsible") {
-            //element clicked wasn't the div; hide the div
-            divToHide.style.display = "none";
-          }
-        };
-      };
 
    bindDateTimeAndRangePicker();
 
